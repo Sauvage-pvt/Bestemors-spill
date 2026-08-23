@@ -95,6 +95,35 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .seg button{flex:1;border-radius:999px;padding:9px 6px;font-size:15px;font-weight:600;color:rgba(246,239,226,.72);min-height:42px}
 .seg button.on{background:var(--paper);color:var(--ink)}
 
+/* ---------- melding (toast) ---------- */
+.toast{
+  position:fixed;left:50%;z-index:55;
+  top:calc(var(--safe-t) + 64px);
+  padding:13px 24px;border-radius:999px;
+  font-weight:650;font-size:17px;text-align:center;
+  max-width:88vw;pointer-events:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  background:var(--amber);color:#2A1D05;
+  animation:tin .18s ease-out;
+}
+.toast.no{background:var(--rose);color:#fff}
+.toast.ut{animation:tut .3s ease-in forwards}
+@keyframes tin{from{transform:translate(-50%,-14px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes tut{to{transform:translate(-50%,-10px);opacity:0}}
+.toast{transform:translateX(-50%)}
+
+/* ---------- lydbryter ---------- */
+.lyd{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  margin:18px auto 0;padding:12px 22px;min-height:48px;
+  border-radius:999px;background:rgba(246,239,226,.12);
+  border:1px solid rgba(246,239,226,.22);
+  color:var(--paper);font-size:16px;font-weight:600;
+}
+.lyd:active{background:rgba(246,239,226,.22)}
+.lyd .pip{width:11px;height:11px;border-radius:50%;background:var(--amber)}
+.lyd.av .pip{background:rgba(246,239,226,.3)}
+
 /* ---------- win overlay ---------- */
 .over{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(11,26,22,.82);padding:24px}
 .over .box{background:var(--paper);color:var(--ink);border-radius:20px;padding:30px 26px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.5)}
@@ -197,7 +226,60 @@ function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()
 function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
 function tap(node,fn){node.addEventListener('click',function(ev){ev.preventDefault();fn(ev);});}
 
+/* ---------- lyd: toner lages i farta, ingen lydfiler ---------- */
+var SND=(function(){
+  var ctx=null, pa=true;
+  try{ pa = localStorage.getItem('sb-lyd')!=='av'; }catch(e){}
+  function init(){
+    if(ctx)return;
+    try{ var C=window.AudioContext||window.webkitAudioContext; if(C)ctx=new C(); }catch(e){ ctx=null; }
+  }
+  function tone(f,start,dur,vol,type){
+    if(!ctx)return;
+    var o=ctx.createOscillator(), g=ctx.createGain();
+    o.type=type||'sine'; o.frequency.value=f;
+    var t=ctx.currentTime+start;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  }
+  var LYD={
+    trykk:function(){ tone(520,0,.07,.10); },
+    ok:   function(){ tone(660,0,.10,.13); tone(880,.07,.13,.11); },
+    nei:  function(){ tone(196,0,.16,.11,'triangle'); },
+    klar: function(){ tone(659,0,.10,.13); tone(880,.08,.10,.12); tone(1175,.16,.20,.11); },
+    seier:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,i*.11,.30,.12); }); }
+  };
+  return {
+    er:function(){ return pa; },
+    sett:function(v){ pa=v; try{ localStorage.setItem('sb-lyd',v?'på':'av'); }catch(e){} if(v){ lasOpp(); LYD.trykk(); } },
+    lasOpp:lasOpp,
+    spill:function(n){ if(!pa)return; lasOpp(); if(LYD[n])LYD[n](); }
+  };
+  function lasOpp(){ init(); if(ctx&&ctx.state==='suspended'){ try{ ctx.resume(); }catch(e){} } }
+})();
+function snd(n){ SND.spill(n); }
+/* iOS krever et fingertrykk før lyd kan starte */
+document.addEventListener('touchstart',function(){SND.lasOpp();},{once:true,passive:true});
+document.addEventListener('click',function(){SND.lasOpp();},{once:true});
+
+/* ---------- kort melding på skjermen ---------- */
+var toastTimer=null;
+function toast(msg,feil){
+  var gml=document.querySelector('.toast'); if(gml)gml.remove();
+  if(toastTimer)clearTimeout(toastTimer);
+  var t=E('div','toast'+(feil?' no':''),msg);
+  document.body.appendChild(t);
+  toastTimer=setTimeout(function(){
+    t.classList.add('ut');
+    setTimeout(function(){ if(t.parentNode)t.remove(); },300);
+  },1500);
+}
+
 function win(msg,sub,again){
+  snd('seier');
   var o=E('div','over'), b=E('div','box');
   b.appendChild(E('h3',null,msg));
   b.appendChild(E('p',null,sub));
@@ -209,12 +291,12 @@ function win(msg,sub,again){
 function seg(labels,cur,fn){
   var s=E('div','seg');
   labels.forEach(function(l,i){
-    var b=E('button',i===cur?'on':'',l); tap(b,function(){fn(i);}); s.appendChild(b);
+    var b=E('button',i===cur?'on':'',l); tap(b,function(){snd('trykk');fn(i);}); s.appendChild(b);
   });
   return s;
 }
 function ctrls(){ return E('div','ctrls'); }
-function mkBtn(txt,fn,ghost){ var b=E('button','btn'+(ghost?' ghost':''),txt); tap(b,fn); return b; }
+function mkBtn(txt,fn,ghost){ var b=E('button','btn'+(ghost?' ghost':''),txt); tap(b,function(){snd('trykk');fn();}); return b; }
 
 /* ============ meny ============ */
 var ICONS={
@@ -247,9 +329,17 @@ function menu(){
   GAMES.forEach(function(g){
     var b=E('button','tile'); b.setAttribute('aria-label',g.name); b.appendChild(icon(g.icon));
     var d=E('div'); d.appendChild(E('b',null,g.name)); d.appendChild(E('span',null,g.sub));
-    b.appendChild(d); tap(b,function(){open(g);}); t.appendChild(b);
+    b.appendChild(d); tap(b,function(){snd('trykk');open(g);}); t.appendChild(b);
   });
   app.appendChild(t);
+  var lb=E('button','lyd'+(SND.er()?'':' av'));
+  function tegnLyd(){
+    clear(lb); lb.className='lyd'+(SND.er()?'':' av');
+    lb.appendChild(E('span','pip'));
+    lb.appendChild(E('span',null,SND.er()?'Lyd er på':'Lyd er av'));
+  }
+  tap(lb,function(){ SND.sett(!SND.er()); tegnLyd(); toast(SND.er()?'Lyd er på':'Lyd er av'); });
+  tegnLyd(); app.appendChild(lb);
   app.appendChild(E('div','foot','Appen bruker ikke internett og samler ingen data.\nDen kan spilles uten dekning.'));
   window.scrollTo(0,0);
 }
@@ -258,7 +348,7 @@ function open(g){
   window.scrollTo(0,0);
   START[g.id](app);
 }
-tap(backBtn,menu);
+tap(backBtn,function(){snd('trykk');menu();});
 var START={};
 
 /* ============ 1. KABAL ============ */
@@ -321,15 +411,16 @@ START.kabal=function(root){
     } return false;
   }
   function autoUp(){
-    var did=true;
+    var did=true, flyttet=false;
     while(did){ did=false;
       if(waste.length){var c=waste[waste.length-1];var f=found[c.s];
-        if(f.length?c.r===f[f.length-1].r+1:c.r===1){waste.pop();f.push(c);moves++;did=true;}}
+        if(f.length?c.r===f[f.length-1].r+1:c.r===1){waste.pop();f.push(c);moves++;did=true;flyttet=true;}}
       for(var j=0;j<7;j++){var col=tab[j];if(!col.length)continue;
         var t=col[col.length-1]; if(!t.up)continue; var g=found[t.s];
         if(g.length?t.r===g[g.length-1].r+1:t.r===1){col.pop();g.push(t);
-          if(col.length&&!col[col.length-1].up)col[col.length-1].up=true;moves++;did=true;}}
+          if(col.length&&!col[col.length-1].up)col[col.length-1].up=true;moves++;did=true;flyttet=true;}}
     }
+    if(flyttet)snd('klar'); else {snd('nei');toast('Ingen kort kan legges opp nå',true);}
     sel=null; render(); check();
   }
   function render(){
@@ -339,8 +430,10 @@ START.kabal=function(root){
     if(stock.length){var c=E('div','card down');p.appendChild(c);}
     else{var s0=E('div','slot','\u21BB');p.appendChild(s0);}
     tap(p,function(){
-      if(stock.length){var c=stock.pop();c.up=true;waste.push(c);}
-      else{while(waste.length){var w=waste.pop();w.up=false;stock.push(w);}}
+      if(stock.length){var c=stock.pop();c.up=true;waste.push(c);snd('trykk');}
+      else if(waste.length){while(waste.length){var w=waste.pop();w.up=false;stock.push(w);}
+        snd('trykk');toast('Bunken er stokket om igjen');}
+      else{snd('nei');toast('Ingen kort igjen i bunken',true);}
       sel=null;render();
     });
     rowEl.appendChild(p);
@@ -349,7 +442,7 @@ START.kabal=function(root){
     if(waste.length){var wc=cardEl(waste[waste.length-1]);
       if(selEq(sel,{t:'w'}))wc.classList.add('sel');pw.appendChild(wc);}
     else pw.appendChild(E('div','slot'));
-    tap(pw,function(){ if(!waste.length)return;
+    tap(pw,function(){ if(!waste.length)return; snd('trykk');
       if(selEq(sel,{t:'w'}))sel=null; else sel={t:'w'}; render();});
     rowEl.appendChild(pw);
     rowEl.appendChild(E('div'));
@@ -359,8 +452,11 @@ START.kabal=function(root){
       if(f.length){var fc=cardEl(f[f.length-1]);pf.appendChild(fc);}
       else pf.appendChild(E('div','slot',SU[i]));
       tap(pf,function(){
-        if(sel){ if(toFound(i)){sel=null;render();check();return;} sel=null; render(); return; }
-        if(f.length)sel={t:'f',i:i};
+        if(sel){
+          if(toFound(i)){snd('ok');sel=null;render();check();return;}
+          snd('nei');toast('Kortet passer ikke her',true);sel=null;render();return;
+        }
+        if(f.length){snd('trykk');sel={t:'f',i:i};}
         render();
       });
       rowEl.appendChild(pf);
@@ -370,16 +466,20 @@ START.kabal=function(root){
     for(var j=0;j<7;j++)(function(j){
       var col=E('div','col'); colEls.push(col);
       var sl=E('div','slot'); col.appendChild(sl);
-      tap(sl,function(){ if(sel&&toCol(j)){sel=null;render();check();} });
+      tap(sl,function(){
+        if(!sel)return;
+        if(toCol(j)){snd('ok');sel=null;render();check();return;}
+        snd('nei');toast('Bare en konge kan flyttes hit',true);
+      });
       tab[j].forEach(function(c,k){
         var e=cardEl(c);
         if(sel&&sel.t==='c'&&sel.col===j&&k>=sel.idx)e.classList.add('sel');
         tap(e,function(ev){
           ev.stopPropagation();
-          if(!c.up){ if(k===tab[j].length-1){c.up=true;sel=null;render();} return; }
-          if(sel){ if(toCol(j)){sel=null;render();check();return;} }
+          if(!c.up){ if(k===tab[j].length-1){c.up=true;snd('trykk');sel=null;render();} return; }
+          if(sel){ if(toCol(j)){snd('ok');sel=null;render();check();return;} }
           if(sel&&sel.t==='c'&&sel.col===j&&sel.idx===k){sel=null;render();return;}
-          sel={t:'c',col:j,idx:k}; render();
+          snd('trykk'); sel={t:'c',col:j,idx:k}; render();
         });
         col.appendChild(e);
       });
@@ -455,16 +555,17 @@ START.memory=function(root){
   function flip(i){
     var c=cards[i];
     if(lock||c.up||c.done)return;
-    c.up=true; open.push(i); render();
+    c.up=true; open.push(i); snd('trykk'); render();
     if(open.length===2){
       tries++; lock=true;
       var a=cards[open[0]], b=cards[open[1]];
       if(a.s===b.s){
         a.done=b.done=true; a.up=b.up=false; found++; open=[]; lock=false; render();
+        snd('ok'); toast('Par funnet: ' + a.s);
         if(found===SIZES[lvl].n)setTimeout(function(){
           win('Alle par funnet!','Du brukte '+tries+' forsøk.',start);},400);
       }else{
-        render();
+        render(); snd('nei');
         setTimeout(function(){a.up=b.up=false;open=[];lock=false;render();},900);
       }
     }
@@ -548,7 +649,7 @@ START.sudoku=function(root){
       }
       if(bad(i))cls+=' bad';
       var e=E('div',cls,cur[i]?String(cur[i]):'');
-      tap(e,function(){sel=(sel===i?-1:i);render();});
+      tap(e,function(){ if(sel!==i)snd('trykk'); sel=(sel===i?-1:i); render(); });
       board.appendChild(e);
     })(i);
     clear(pad);
@@ -560,8 +661,11 @@ START.sudoku=function(root){
     st.innerHTML='Tomme ruter: <b>'+left+'</b>';
   }
   function put(v){
-    if(sel<0||puz[sel])return;
+    if(sel<0){ snd('nei'); toast('Trykk på en rute først',true); return; }
+    if(puz[sel]){ snd('nei'); toast('Dette tallet var gitt på forhånd',true); return; }
     cur[sel]=v; render();
+    if(v&&bad(sel)){ snd('nei'); toast('Tallet finnes allerede i rekken',true); }
+    else snd('trykk');
     if(cur.every(function(x,i){return x===sol[i];}))
       win('Ferdig!','Alle tallene stemmer.',start);
   }
@@ -637,11 +741,11 @@ START.ord=function(root){
     st.innerHTML='Funnet: <b>'+g+'</b> av '+words.length;
   }
   function hit(i){
-    if(pick===null){pick=i;render();return;}
-    if(pick===i){pick=null;render();return;}
+    if(pick===null){snd('trykk');pick=i;render();return;}
+    if(pick===i){snd('trykk');pick=null;render();return;}
     var r1=Math.floor(pick/N),c1=pick%N,r2=Math.floor(i/N),c2=i%N;
     var dr=r2-r1, dc=c2-c1;
-    if(!(dr===0||dc===0||Math.abs(dr)===Math.abs(dc))){pick=i;render();return;}
+    if(!(dr===0||dc===0||Math.abs(dr)===Math.abs(dc))){snd('trykk');pick=i;render();return;}
     var len=Math.max(Math.abs(dr),Math.abs(dc))+1;
     var sr=Math.sign(dr), sc=Math.sign(dc), cells=[], s='';
     for(var k=0;k<len;k++){var idx=(r1+sr*k)*N+(c1+sc*k);cells.push(idx);s+=grid[idx];}
@@ -649,9 +753,10 @@ START.ord=function(root){
     var hitw=null;
     words.forEach(function(o){ if(!o.got&&(o.w===s||o.w===rev))hitw=o; });
     if(hitw){ hitw.got=true; cells.forEach(function(x){foundCells[x]=1;}); pick=null; render();
+      snd('klar'); toast(hitw.w + ' funnet!');
       if(words.every(function(o){return o.got;}))
         setTimeout(function(){win('Alle ord funnet!','Kategori: '+CATS[cat].t,start);},300);
-    } else { pick=i; render(); }
+    } else { snd('nei'); toast('Ikke et ord fra lista',true); pick=i; render(); }
   }
   segs(); start();
 };
@@ -740,16 +845,25 @@ START.farge=function(root){
     el.classList.add('no'); setTimeout(function(){el.classList.remove('no');},320);
   }
   function hit(i){
-    if(sel<0){ if(!tubes[i].length)return; sel=i; render(); return; }
-    if(sel===i){ sel=-1; render(); return; }
+    if(sel<0){
+      if(!tubes[i].length){ snd('nei'); toast('Glasset er tomt',true); return; }
+      snd('trykk'); sel=i; render(); return;
+    }
+    if(sel===i){ snd('trykk'); sel=-1; render(); return; }
     var a=tubes[sel], b=tubes[i];
     if(b.length<CAP&&(!b.length||b[b.length-1]===a[a.length-1])){
       push();
       var n=Math.min(runLen(a),CAP-b.length);
       for(var k=0;k<n;k++)b.push(a.pop());
+      var ferdig=b.length===CAP&&b.every(function(x){return x===b[0];});
       sel=-1; render();
+      if(ferdig){ snd('klar'); toast('Glasset er ferdig!'); } else snd('ok');
       if(done(tubes))setTimeout(function(){win('Alt sortert!','Hver farge har sitt eget glass.',start);},350);
-    } else { shake(i); sel=-1; render(); }
+    } else {
+      shake(i); snd('nei');
+      toast(b.length>=CAP?'Glasset er fullt':'Kulene må ha samme farge',true);
+      sel=-1; render();
+    }
   }
   segs(); start();
 };
