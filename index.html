@@ -78,6 +78,15 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .tile b{display:block;font-family:Georgia,serif;font-weight:400;font-size:22px;line-height:1.2}
 .tile span{display:block;color:var(--ink-soft);font-size:14px;margin-top:3px}
 .foot{margin:22px 4px 0;text-align:center;color:rgba(246,239,226,.45);font-size:13px;line-height:1.6}
+.tilbake{
+  display:block;margin:14px auto 0;padding:12px 20px;min-height:46px;
+  text-align:center;text-decoration:none;
+  color:rgba(246,239,226,.72);font-size:15px;font-weight:600;
+  border-radius:999px;border:1px solid rgba(246,239,226,.18);
+  width:fit-content;
+}
+.tilbake:active{background:rgba(246,239,226,.14)}
+.ver{margin-top:14px;text-align:center;color:rgba(246,239,226,.3);font-size:12px}
 
 /* ---------- shared game chrome ---------- */
 .ctrls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:2px 0 12px}
@@ -134,12 +143,12 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .over .box{animation:pop .22s ease-out}
 
 /* ---------- kabal ---------- */
-#kab .row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-#kab .cols{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px;align-items:start}
-#kab .pile,#kab .col{position:relative}
-#kab .pile{aspect-ratio:5/7}
-#kab .slot{position:absolute;top:0;left:0;right:0;aspect-ratio:5/7;border-radius:6px;border:1.5px dashed rgba(246,239,226,.3);display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(246,239,226,.34)}
-#kab .pile .card{top:0}
+#kab .row,.kortbord .row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+#kab .cols,.kortbord .cols{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px;align-items:start}
+#kab .pile,#kab .col,.kortbord .pile,.kortbord .col{position:relative}
+#kab .pile,.kortbord .pile{aspect-ratio:5/7}
+#kab .slot,.kortbord .slot{position:absolute;top:0;left:0;right:0;aspect-ratio:5/7;border-radius:6px;border:1.5px dashed rgba(246,239,226,.3);display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(246,239,226,.34)}
+#kab .pile .card,.kortbord .pile .card{top:0}
 .card{
   position:absolute;left:0;right:0;aspect-ratio:5/7;border-radius:6px;
   background:var(--paper);color:var(--ink);
@@ -205,6 +214,41 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 @keyframes shk{10%,90%{transform:translateX(-3px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-4px)}}
 .tube.no{animation:shk .3s}
 
+/* ---------- minesveiper ---------- */
+#min .board{display:grid;gap:3px;justify-content:center;margin:0 auto;max-width:420px}
+#min .mr{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;background:var(--felt-l);
+  border:1.5px solid rgba(246,239,226,.22);
+  font:750 17px/1 -apple-system,sans-serif;font-variant-numeric:tabular-nums;
+}
+#min .mr:active{background:rgba(246,239,226,.2)}
+#min .mr.apen{background:var(--paper);border-color:var(--paper-d);box-shadow:none}
+#min .mr.flagg{background:rgba(224,161,58,.22);border-color:var(--amber);font-size:19px}
+#min .mr.mine{background:var(--rose);font-size:19px}
+#min .mr.n1{color:#3D6FD4}#min .mr.n2{color:#2F7D46}#min .mr.n3{color:#C4614F}
+#min .mr.n4{color:#7A4BB0}#min .mr.n5{color:#9A6612}#min .mr.n6{color:#2C8791}
+#min .mr.n7{color:#22302B}#min .mr.n8{color:#5E6F68}
+
+/* ---------- bærplukk ---------- */
+#bar .board{display:grid;gap:5px;max-width:400px;margin:0 auto}
+#bar .bt{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  background:var(--paper);border-radius:12px;font-size:29px;
+  box-shadow:0 2px 0 var(--paper-d);
+  transition:transform .12s ease;
+}
+#bar .bt.valgt{outline:3px solid var(--amber);transform:scale(.92)}
+#bar .bt.vekk{opacity:.15;transform:scale(.5)}
+#bar .bt.nei{animation:shk .3s}
+#bar .mal{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:0 auto 12px;padding:10px 20px;border-radius:999px;
+  background:rgba(0,0,0,.2);font-size:17px;width:fit-content;
+}
+#bar .mal span{font-size:26px}
+#bar .mal b{color:var(--amber);font-size:19px}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -218,6 +262,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 </div>
 <script>
 /* ============ felles ============ */
+var VERSJON='1.3';
 var app=document.getElementById('app'), bar=document.getElementById('bar'),
     titleEl=document.getElementById('title'), backBtn=document.getElementById('back');
 
@@ -250,7 +295,8 @@ var SND=(function(){
     ok:   function(){ tone(660,0,.10,.13); tone(880,.07,.13,.11); },
     nei:  function(){ tone(196,0,.16,.11,'triangle'); },
     klar: function(){ tone(659,0,.10,.13); tone(880,.08,.10,.12); tone(1175,.16,.20,.11); },
-    seier:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,i*.11,.30,.12); }); }
+    seier:function(){ [523,659,784,1047].forEach(function(f,i){ tone(f,i*.11,.30,.12); }); },
+    tap:  function(){ [392,330,262].forEach(function(f,i){ tone(f,i*.13,.34,.12,'triangle'); }); }
   };
   return {
     er:function(){ return pa; },
@@ -304,6 +350,9 @@ var ICONS={
  memory:'<rect x="5" y="5" width="19" height="19" rx="4" fill="#1E4038"/><rect x="28" y="5" width="19" height="19" rx="4" fill="#E0A13A"/><rect x="5" y="28" width="19" height="19" rx="4" fill="#E0A13A"/><rect x="28" y="28" width="19" height="19" rx="4" fill="#1E4038"/><circle cx="37.5" cy="37.5" r="4.5" fill="#F6EFE2"/><circle cx="14.5" cy="14.5" r="4.5" fill="#F6EFE2"/>',
  sudoku:'<rect x="5" y="5" width="42" height="42" rx="5" fill="#F6EFE2" stroke="#22302B" stroke-width="2.5"/><path d="M19 5v42M33 5v42M5 19h42M5 33h42" stroke="#22302B" stroke-width="1.6" opacity=".55"/><text x="9.5" y="17" font-family="Georgia" font-size="12" fill="#C4614F">5</text><text x="37" y="45" font-family="Georgia" font-size="12" fill="#1E4038">7</text><text x="23.5" y="31" font-family="Georgia" font-size="12" fill="#E0A13A">3</text>',
  ord:'<rect x="5" y="9" width="42" height="34" rx="5" fill="#F6EFE2" stroke="#22302B" stroke-width="2.5"/><rect x="9" y="20" width="26" height="8" rx="4" fill="#E0A13A"/><path d="M11 15h9M25 15h16M11 35h20M36 35h5" stroke="#22302B" stroke-width="2.4" stroke-linecap="round" opacity=".65"/>',
+ mine:'<rect x="4" y="4" width="44" height="44" rx="6" fill="#F6EFE2" stroke="#22302B" stroke-width="2"/><path d="M18 4v44M33 4v44M4 18h44M4 33h44" stroke="#22302B" stroke-width="1.4" opacity=".4"/><circle cx="33" cy="33" r="8" fill="#22302B"/><path d="M33 20v6M42 24l-4 4M46 33h-6" stroke="#C4614F" stroke-width="2.6" stroke-linecap="round"/><text x="8" y="16" font-family="Georgia" font-size="11" fill="#3D6FD4">1</text>',
+ baer:'<circle cx="17" cy="32" r="11" fill="#C4614F"/><circle cx="35" cy="36" r="10" fill="#8B5BC0"/><circle cx="30" cy="17" r="9" fill="#E0A13A"/><path d="M30 8v-3M17 21v-4" stroke="#3FA05A" stroke-width="3" stroke-linecap="round"/><circle cx="14" cy="29" r="1.6" fill="#F6EFE2"/><circle cx="33" cy="33" r="1.6" fill="#F6EFE2"/>',
+ edd:'<rect x="4" y="6" width="20" height="28" rx="4" fill="#F6EFE2" stroke="#22302B" stroke-width="2"/><rect x="16" y="14" width="20" height="28" rx="4" fill="#F6EFE2" stroke="#22302B" stroke-width="2"/><rect x="28" y="22" width="20" height="28" rx="4" fill="#F6EFE2" stroke="#22302B" stroke-width="2"/><path d="M38 30c3 3 5 5 5 7.5S41 41 39.5 39.5c.3 1.5.8 2.5.8 2.5h-2.6s.5-1 .8-2.5C36.9 41 35 40 35 37.5S38 30 38 30z" fill="#22302B"/>',
  farge:'<path d="M9 14h13v26a6.5 6.5 0 01-13 0z" fill="none" stroke="#F6EFE2" stroke-width="2.5"/><circle cx="15.5" cy="38" r="5" fill="#C4614F"/><circle cx="15.5" cy="28" r="5" fill="#E0A13A"/><path d="M30 14h13v26a6.5 6.5 0 01-13 0z" fill="none" stroke="#F6EFE2" stroke-width="2.5"/><circle cx="36.5" cy="38" r="5" fill="#7FB3AE"/><circle cx="36.5" cy="28" r="5" fill="#C4614F"/><circle cx="36.5" cy="18" r="5" fill="#E0A13A"/>'
 };
 function icon(k){
@@ -317,7 +366,10 @@ var GAMES=[
  {id:'memory',name:'Memory',          sub:'Finn to like',                 icon:'memory'},
  {id:'sudoku',name:'Sudoku',          sub:'Tall fra 1 til 9',             icon:'sudoku'},
  {id:'ord',   name:'Ordsøk',          sub:'Finn ordene i rutenettet',     icon:'ord'},
- {id:'farge', name:'Fargesortering',  sub:'Samle én farge i hvert glass', icon:'farge'}
+ {id:'farge', name:'Fargesortering',  sub:'Samle én farge i hvert glass', icon:'farge'},
+ {id:'edd',   name:'Edderkoppkabal',  sub:'Bygg konge ned til ess',       icon:'edd'},
+ {id:'mine',  name:'Minesveiper',     sub:'Grav uten å treffe miner',     icon:'mine'},
+ {id:'baer',  name:'Bærplukk',        sub:'Bytt to bær og lag rekker',    icon:'baer'}
 ];
 function menu(){
   bar.hidden=true; clear(app);
@@ -332,15 +384,19 @@ function menu(){
     b.appendChild(d); tap(b,function(){snd('trykk');open(g);}); t.appendChild(b);
   });
   app.appendChild(t);
+  var tbA=null;
   var lb=E('button','lyd'+(SND.er()?'':' av'));
   function tegnLyd(){
     clear(lb); lb.className='lyd'+(SND.er()?'':' av');
     lb.appendChild(E('span','pip'));
     lb.appendChild(E('span',null,SND.er()?'Lyd er på':'Lyd er av'));
   }
-  tap(lb,function(){ SND.sett(!SND.er()); tegnLyd(); toast(SND.er()?'Lyd er på':'Lyd er av'); });
+  tap(lb,function(){ SND.sett(!SND.er()); tegnLyd(); if(tbA)tbA.href=tbHref(); toast(SND.er()?'Lyd er på':'Lyd er av'); });
   tegnLyd(); app.appendChild(lb);
   app.appendChild(E('div','foot','Appen bruker ikke internett og samler ingen data.\nDen kan spilles uten dekning.'));
+  tbA=tilbakemeldingLenke();
+  app.appendChild(tbA);
+  app.appendChild(E('div','ver','Versjon '+VERSJON));
   window.scrollTo(0,0);
 }
 function open(g){
@@ -351,11 +407,65 @@ function open(g){
 tap(backBtn,function(){snd('trykk');menu();});
 var START={};
 
+/* ============ tilbakemelding ============ */
+function tbHref(){
+  var brodtekst=
+    'Skriv her hva du synes, eller hva som ikke virket:\n\n\n' +
+    '------------------------------\n' +
+    'Teknisk info (la denne stå):\n' +
+    'Versjon: ' + VERSJON + '\n' +
+    'Skjerm: ' + window.innerWidth + ' x ' + window.innerHeight + '\n' +
+    'Lyd: ' + (SND.er() ? 'på' : 'av') + '\n' +
+    'Hjem-skjerm: ' + (window.navigator.standalone ? 'ja' : 'nei') + '\n' +
+    'Nettleser: ' + (navigator.userAgent || 'ukjent');
+  return 'mailto:minnarmorro@gmail.com'
+    + '?subject=' + encodeURIComponent('Spillebordet - tilbakemelding')
+    + '&body=' + encodeURIComponent(brodtekst);
+}
+function tilbakemeldingLenke(){
+  var a=document.createElement('a');
+  a.className='tilbake';
+  a.textContent='Si fra om noe ikke virker';
+  a.href=tbHref();
+  a.addEventListener('click',function(){ snd('trykk'); a.href=tbHref(); });
+  return a;
+}
+
+/* ============ felles kort ============ */
+var K_SU=['\u2660','\u2665','\u2666','\u2663'],
+    K_RK=['','E','2','3','4','5','6','7','8','9','10','Kn','D','K'];
+function kortEl(c){
+  if(!c.up)return E('div','card down');
+  var e=E('div','card'+((c.s===1||c.s===2)?' red':''));
+  e.appendChild(E('div','rk',K_RK[c.r]));
+  e.appendChild(E('div','su',K_SU[c.s]));
+  e.appendChild(E('div','big',K_SU[c.s]));
+  return e;
+}
+/* plasserer kort nedover i en kolonne og setter høyden */
+function stableUt(colEls,data,minH){
+  var w=colEls[0].getBoundingClientRect().width||46, ch=w*1.4;
+  var top=colEls[0].getBoundingClientRect().top;
+  var maxH=Math.max(minH||240,window.innerHeight-top-28);
+  colEls.forEach(function(col,j){
+    var kort=[].slice.call(col.querySelectorAll('.card'));
+    if(!kort.length){col.style.height=Math.round(ch)+'px';return;}
+    var dOff=ch*0.19, uOff=ch*0.31, nd=0, nu=0;
+    data[j].forEach(function(c){c.up?nu++:nd++;});
+    var tot=nd*dOff+Math.max(0,nu-1)*uOff;
+    if(tot>maxH-ch&&tot>0){var k=(maxH-ch)/tot;dOff=Math.max(5,dOff*k);uOff=Math.max(9,uOff*k);}
+    var y=0;
+    kort.forEach(function(e,k){ e.style.top=Math.round(y)+'px'; y+=data[j][k].up?uOff:dOff; });
+    var sis=kort.length-1;
+    col.style.height=Math.round(y-(data[j][sis].up?uOff:dOff)+ch)+'px';
+  });
+}
+
 /* ============ 1. KABAL ============ */
 START.kabal=function(root){
   var SU=['\u2660','\u2665','\u2666','\u2663'], RK=['','E','2','3','4','5','6','7','8','9','10','Kn','D','K'];
   var stock,waste,found,tab,sel,moves;
-  var box=E('div'); box.id='kab';
+  var box=E('div','kortbord'); box.id='kab';
   var st=E('p','status'); var cb=ctrls();
   cb.appendChild(mkBtn('Legg opp',autoUp));
   cb.appendChild(mkBtn('Nytt spill',deal,true));
@@ -864,6 +974,332 @@ START.farge=function(root){
       toast(b.length>=CAP?'Glasset er fullt':'Kulene må ha samme farge',true);
       sel=-1; render();
     }
+  }
+  segs(); start();
+};
+
+/* ============ 6. EDDERKOPPKABAL (én farge, 52 kort) ============ */
+START.edd=function(root){
+  var tab, lager, ferdige, sel;
+  var st=E('p','status'), cb=ctrls(), delB;
+  var box=E('div','kortbord'); box.id='edd';
+  var colsEl=E('div','cols'); box.appendChild(colsEl);
+  delB=mkBtn('Del ut kort',delUt);
+  cb.appendChild(delB); cb.appendChild(mkBtn('Nytt spill',gi,true));
+  root.appendChild(st); root.appendChild(cb); root.appendChild(box);
+
+  function gi(){
+    var d=[];
+    for(var g=0;g<4;g++)for(var r=1;r<=13;r++)d.push({r:r,s:0,up:false});
+    shuffle(d);
+    tab=[[],[],[],[],[],[],[]]; ferdige=0; sel=null;
+    for(var i=0;i<7;i++)for(var j=i;j<7;j++){var c=d.pop();c.up=(j===i);tab[j].push(c);}
+    lager=d;
+    tegn();
+  }
+  /* er kortene fra idx og ut en synkende rekke? */
+  function rekke(col,idx){
+    var t=tab[col];
+    for(var i=idx;i<t.length;i++){
+      if(!t[i].up)return false;
+      if(i>idx&&t[i].r!==t[i-1].r-1)return false;
+    }
+    return true;
+  }
+  function flytt(fra,idx,til){
+    if(fra===til)return false;
+    var run=tab[fra].slice(idx), m=tab[til], topp=m[m.length-1];
+    if(m.length){ if(!topp.up||run[0].r!==topp.r-1)return false; }
+    tab[fra].splice(idx);
+    run.forEach(function(c){ m.push(c); });
+    var f=tab[fra];
+    if(f.length&&!f[f.length-1].up)f[f.length-1].up=true;
+    ryddFerdig(til);
+    return true;
+  }
+  /* konge ned til ess i én kolonne fjernes */
+  function ryddFerdig(j){
+    var t=tab[j];
+    if(t.length<13)return;
+    var s=t.length-13;
+    for(var i=0;i<13;i++){
+      var c=t[s+i];
+      if(!c.up||c.r!==13-i)return;
+    }
+    t.splice(s); ferdige++;
+    if(t.length&&!t[t.length-1].up)t[t.length-1].up=true;
+    snd('klar'); toast('En hel rekke er ferdig!');
+  }
+  function delUt(){
+    if(!lager.length){ snd('nei'); toast('Ingen flere kort å dele ut',true); return; }
+    var n=Math.min(7,lager.length);
+    for(var j=0;j<n;j++){ var c=lager.pop(); c.up=true; tab[j].push(c); }
+    for(var k=0;k<n;k++)ryddFerdig(k);
+    sel=null; tegn();
+  }
+  function tegn(){
+    clear(colsEl);
+    var colEls=[];
+    for(var j=0;j<7;j++)(function(j){
+      var col=E('div','col'); colEls.push(col);
+      var sl=E('div','slot');
+      tap(sl,function(){
+        if(!sel){ return; }
+        if(flytt(sel.col,sel.idx,j)){ snd('ok'); sel=null; tegn(); sjekk(); return; }
+        snd('nei'); toast('Kortet kan ikke flyttes hit',true);
+      });
+      col.appendChild(sl);
+      tab[j].forEach(function(c,k){
+        var e=kortEl(c);
+        if(sel&&sel.col===j&&k>=sel.idx)e.classList.add('sel');
+        tap(e,function(ev){
+          ev.stopPropagation();
+          if(!c.up){
+            if(k===tab[j].length-1){ c.up=true; snd('trykk'); sel=null; tegn(); }
+            return;
+          }
+          if(sel){
+            if(flytt(sel.col,sel.idx,j)){ snd('ok'); sel=null; tegn(); sjekk(); return; }
+            if(sel.col===j&&sel.idx===k){ sel=null; tegn(); return; }
+          }
+          if(!rekke(j,k)){ snd('nei'); toast('Bare kort som ligger i rekkefølge kan flyttes',true); return; }
+          snd('trykk'); sel={col:j,idx:k}; tegn();
+        });
+        col.appendChild(e);
+      });
+      colsEl.appendChild(col);
+    })(j);
+    stableUt(colEls,tab,200);
+    delB.disabled=!lager.length;
+    st.innerHTML='Ferdige rekker: <b>'+ferdige+'</b> av 4 \u00B7 Igjen i bunken: '+lager.length;
+  }
+  function sjekk(){
+    if(ferdige===4)win('Kabalen gikk opp!','Alle fire rekkene er ferdige.',gi);
+  }
+  window.addEventListener('resize',function(){ if(document.getElementById('edd'))tegn(); });
+  gi();
+};
+
+/* ============ 7. MINESVEIPER ============ */
+START.mine=function(root){
+  var LV=[{t:'Lett',c:7,r:9,m:8},{t:'Middels',c:9,r:12,m:18},{t:'Vanskelig',c:10,r:14,m:28}];
+  var lvl=0, C, R, M, felt, apen, flagg, startet, tapt, ferdig, modus='grav';
+  var st=E('p','status'), board=E('div','board'), holder=E('div'); holder.id='min';
+  holder.appendChild(board);
+  var segL=E('div','seg'), segM=E('div','seg seg2');
+  var cb=ctrls(); cb.appendChild(mkBtn('Ny bane',start,true));
+  root.appendChild(segL); root.appendChild(segM); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
+  function segs(){
+    clear(segL);
+    LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;segs();start();});segL.appendChild(b);});
+    clear(segM);
+    [['grav','\u26CF\uFE0F Grav'],['flagg','\uD83D\uDEA9 Sett flagg']].forEach(function(o){
+      var b=E('button',modus===o[0]?'on':'',o[1]);
+      tap(b,function(){snd('trykk');modus=o[0];segs();if(felt)tegn();});
+      segM.appendChild(b);
+    });
+  }
+  function idx(r,c){return r*C+c;}
+  function naboer(i){
+    var r=Math.floor(i/C), c=i%C, out=[];
+    for(var dr=-1;dr<=1;dr++)for(var dc=-1;dc<=1;dc++){
+      if(!dr&&!dc)continue;
+      var rr=r+dr, cc=c+dc;
+      if(rr<0||rr>=R||cc<0||cc>=C)continue;
+      out.push(idx(rr,cc));
+    }
+    return out;
+  }
+  function start(){
+    var L=LV[lvl]; C=L.c; R=L.r; M=L.m;
+    felt=new Array(C*R).fill(0); apen={}; flagg={};
+    startet=false; tapt=false; ferdig=false;
+    board.style.gridTemplateColumns='repeat('+C+',1fr)';
+    board.style.maxWidth=Math.min(420,C*46)+'px';
+    tegn();
+  }
+  function leggMiner(fri){
+    var trygt={}; trygt[fri]=1; naboer(fri).forEach(function(x){trygt[x]=1;});
+    var plasser=[];
+    for(var i=0;i<C*R;i++)if(!trygt[i])plasser.push(i);
+    shuffle(plasser);
+    plasser.slice(0,Math.min(M,plasser.length)).forEach(function(i){felt[i]=-1;});
+    for(var k=0;k<C*R;k++){
+      if(felt[k]===-1)continue;
+      var n=0; naboer(k).forEach(function(x){ if(felt[x]===-1)n++; });
+      felt[k]=n;
+    }
+    startet=true;
+  }
+  function grav(i){
+    if(apen[i]||flagg[i])return;
+    if(!startet)leggMiner(i);
+    if(felt[i]===-1){
+      tapt=true; apen[i]=1; tegn(); snd('tap');
+      setTimeout(function(){ win('Der lå det en mine','Ingen fare \u2014 prøv en ny bane.',start); },500);
+      return;
+    }
+    var kø=[i];
+    while(kø.length){
+      var k=kø.pop();
+      if(apen[k]||flagg[k])continue;
+      apen[k]=1;
+      if(felt[k]===0)naboer(k).forEach(function(x){ if(!apen[x])kø.push(x); });
+    }
+    snd('trykk'); tegn(); sjekk();
+  }
+  function sjekk(){
+    var trygge=0, apne=0;
+    for(var i=0;i<C*R;i++){ if(felt[i]!==-1)trygge++; if(apen[i])apne++; }
+    if(startet&&apne===trygge){
+      ferdig=true; tegn();
+      setTimeout(function(){ win('Alle miner unngått!','Du fant hele banen.',start); },300);
+    }
+  }
+  function tegn(){
+    clear(board);
+    for(var i=0;i<C*R;i++)(function(i){
+      var cls='mr', txt='';
+      if(tapt&&felt[i]===-1&&!flagg[i]){ cls+=' mine'; txt='\uD83D\uDCA3'; }
+      else if(flagg[i]){ cls+=' flagg'; txt='\uD83D\uDEA9'; }
+      else if(apen[i]){ cls+=' apen'; if(felt[i]>0){cls+=' n'+felt[i]; txt=String(felt[i]);} }
+      var e=E('div',cls,txt);
+      tap(e,function(){
+        if(tapt||ferdig)return;
+        if(modus==='flagg'){
+          if(apen[i]){ snd('nei'); toast('Ruta er allerede gravd opp',true); return; }
+          if(flagg[i])delete flagg[i]; else flagg[i]=1;
+          snd('trykk'); tegn(); return;
+        }
+        if(flagg[i]){ snd('nei'); toast('Fjern flagget først',true); return; }
+        grav(i);
+      });
+      board.appendChild(e);
+    })(i);
+    var f=Object.keys(flagg).length;
+    st.innerHTML='Miner igjen: <b>'+(M-f)+'</b> \u00B7 '+(modus==='grav'?'du graver':'du setter flagg');
+  }
+  segs(); start();
+};
+
+/* ============ 8. BÆRPLUKK ============ */
+START.baer=function(root){
+  var ALLE=['\uD83C\uDF53','\uD83E\uDED0','\uD83C\uDF52','\uD83C\uDF47','\uD83C\uDF4E','\uD83C\uDF51'];
+  var LV=[{t:'Lett',n:4,mal:12},{t:'Middels',n:5,mal:18},{t:'Vanskelig',n:6,mal:25}];
+  var C=7, R=8, lvl=0, rute, sort, malBaer, plukket, sel, laast;
+  var st=E('p','status'), malEl=E('div','mal'), board=E('div','board'), holder=E('div'); holder.id='bar';
+  holder.appendChild(malEl); holder.appendChild(board);
+  var segL=E('div','seg');
+  var cb=ctrls(); cb.appendChild(mkBtn('Nytt brett',start,true));
+  root.appendChild(segL); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
+  function segs(){clear(segL);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;segs();start();});segL.appendChild(b);});}
+
+  function ny(){ return sort[Math.floor(Math.random()*sort.length)]; }
+  function tref(g){
+    var m={};
+    for(var r=0;r<R;r++)for(var c=0;c<C-2;c++){
+      var v=g[r*C+c]; if(!v)continue;
+      if(g[r*C+c+1]===v&&g[r*C+c+2]===v){
+        var k=c; while(k<C&&g[r*C+k]===v){m[r*C+k]=1;k++;}
+      }
+    }
+    for(var c2=0;c2<C;c2++)for(var r2=0;r2<R-2;r2++){
+      var v2=g[r2*C+c2]; if(!v2)continue;
+      if(g[(r2+1)*C+c2]===v2&&g[(r2+2)*C+c2]===v2){
+        var k2=r2; while(k2<R&&g[k2*C+c2]===v2){m[k2*C+c2]=1;k2++;}
+      }
+    }
+    return Object.keys(m).map(Number);
+  }
+  function bytt(g,a,b){ var t=g[a]; g[a]=g[b]; g[b]=t; }
+  function finnesTrekk(g){
+    for(var i=0;i<C*R;i++){
+      var c=i%C;
+      if(c<C-1){ bytt(g,i,i+1); var t1=tref(g).length; bytt(g,i,i+1); if(t1)return true; }
+      if(i+C<C*R){ bytt(g,i,i+C); var t2=tref(g).length; bytt(g,i,i+C); if(t2)return true; }
+    }
+    return false;
+  }
+  function nyttBrett(){
+    var g;
+    do{
+      g=[];
+      for(var i=0;i<C*R;i++)g.push(ny());
+      var vakt=0;
+      while(tref(g).length&&vakt++<400)tref(g).forEach(function(i){g[i]=ny();});
+    }while(tref(g).length||!finnesTrekk(g));
+    return g;
+  }
+  function start(){
+    var L=LV[lvl];
+    sort=ALLE.slice(0,L.n);
+    malBaer=sort[Math.floor(Math.random()*sort.length)];
+    plukket=0; sel=null; laast=false;
+    rute=nyttBrett();
+    board.style.gridTemplateColumns='repeat('+C+',1fr)';
+    tegn();
+  }
+  function tegn(vekk){
+    clear(board);
+    for(var i=0;i<C*R;i++)(function(i){
+      var cls='bt'+(sel===i?' valgt':'')+(vekk&&vekk.indexOf(i)>=0?' vekk':'');
+      var e=E('div',cls,rute[i]);
+      tap(e,function(){trykk(i);});
+      board.appendChild(e);
+    })(i);
+    clear(malEl);
+    malEl.appendChild(E('span',null,malBaer));
+    var b=E('b',null,plukket+' av '+LV[lvl].mal);
+    malEl.appendChild(b);
+    st.textContent='Bytt to bær som ligger inntil hverandre';
+  }
+  function inntil(a,b){
+    var ra=Math.floor(a/C), ca=a%C, rb=Math.floor(b/C), cb2=b%C;
+    return Math.abs(ra-rb)+Math.abs(ca-cb2)===1;
+  }
+  function trykk(i){
+    if(laast)return;
+    if(sel===null){ snd('trykk'); sel=i; tegn(); return; }
+    if(sel===i){ snd('trykk'); sel=null; tegn(); return; }
+    if(!inntil(sel,i)){ snd('trykk'); sel=i; tegn(); return; }
+    var a=sel, b=i;
+    bytt(rute,a,b);
+    if(!tref(rute).length){
+      bytt(rute,a,b); sel=null; tegn();
+      snd('nei'); toast('Det gir ingen rekke',true);
+      var el=board.children[b]; if(el){el.classList.add('nei');setTimeout(function(){el.classList.remove('nei');},320);}
+      return;
+    }
+    sel=null; laast=true; snd('ok'); tegn();
+    setTimeout(loes,140);
+  }
+  function loes(){
+    var m=tref(rute);
+    if(!m.length){
+      if(!finnesTrekk(rute)){ rute=nyttBrett(); toast('Ingen trekk igjen \u2014 nytt brett'); }
+      laast=false; tegn();
+      if(plukket>=LV[lvl].mal)
+        setTimeout(function(){win('Kurven er full!','Du plukket '+plukket+' '+malBaer,start);},250);
+      return;
+    }
+    var traff=0;
+    m.forEach(function(i){ if(rute[i]===malBaer){plukket++;traff++;} });
+    snd(m.length>=4?'klar':'ok');
+    if(traff>=3)toast(traff+' '+malBaer+' på én gang!');
+    tegn(m);
+    setTimeout(function(){
+      m.forEach(function(i){ rute[i]=null; });
+      for(var c=0;c<C;c++){
+        var kol=[];
+        for(var r=R-1;r>=0;r--)if(rute[r*C+c]!==null)kol.push(rute[r*C+c]);
+        for(var r2=R-1;r2>=0;r2--){
+          var v=kol[R-1-r2];
+          rute[r2*C+c]=(v===undefined?ny():v);
+        }
+      }
+      tegn();
+      setTimeout(loes,160);
+    },200);
   }
   segs(); start();
 };
