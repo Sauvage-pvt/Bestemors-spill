@@ -11,11 +11,13 @@
  * CACHE-navnet trenger du normalt ikke å røre. Øk det bare hvis du
  * bytter ut ikonene og vil tvinge fram nye med én gang.
  */
-var CACHE = 'spillebordet-v2';
+var CACHE = 'spillebordet-v5';
 var SHELL = [
   './',
   './index.html',
+  './barn.html',
   './manifest.webmanifest',
+  './manifest-barn.webmanifest',
   './icon-180.png',
   './icon-192.png',
   './icon-512.png'
@@ -86,7 +88,7 @@ function ingenting() {
 function fraCache(req) {
   return caches.match(req).then(function (hit) {
     if (hit) return hit;
-    return caches.match('./index.html');
+    return caches.match(req.url.indexOf('barn') !== -1 ? './barn.html' : './index.html');
   }).then(function (hit) {
     return hit || ingenting();
   });
@@ -103,7 +105,7 @@ self.addEventListener('fetch', function (e) {
       nettMedTimeout(req).then(function (res) {
         if (res && res.ok) {
           var kopi = res.clone();
-          caches.open(CACHE).then(function (c) { c.put('./index.html', kopi); });
+          caches.open(CACHE).then(function (c) { c.put(req, kopi); });
         }
         return res;
       }).catch(function () {

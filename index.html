@@ -77,6 +77,20 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .tile .ic{width:52px;height:52px;flex:0 0 52px}
 .tile b{display:block;font-family:Georgia,serif;font-weight:400;font-size:22px;line-height:1.2}
 .tile span{display:block;color:var(--ink-soft);font-size:14px;margin-top:3px}
+.tile .pab{
+  display:inline-block;margin-top:5px;padding:3px 10px;border-radius:999px;
+  background:var(--felt);color:var(--paper);font-size:12px;font-weight:650;
+}
+.fortsett{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  background:var(--amber);color:#2A1D05;border-radius:var(--r);
+  padding:15px 18px;min-height:74px;margin-bottom:14px;
+  box-shadow:0 3px 0 var(--amber-d), 0 10px 22px rgba(0,0,0,.28);
+}
+.fortsett:active{transform:translateY(3px);box-shadow:0 0 0 var(--amber-d),0 6px 14px rgba(0,0,0,.3)}
+.fortsett .pil{font-size:26px;line-height:1}
+.fortsett b{display:block;font-family:Georgia,serif;font-weight:400;font-size:21px;line-height:1.2}
+.fortsett span{display:block;font-size:14px;margin-top:3px;opacity:.75}
 .foot{margin:22px 4px 0;text-align:center;color:rgba(246,239,226,.45);font-size:13px;line-height:1.6}
 .tilbake{
   display:block;margin:14px auto 0;padding:12px 20px;min-height:46px;
@@ -86,6 +100,16 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
   width:fit-content;
 }
 .tilbake:active{background:rgba(246,239,226,.14)}
+.bytt{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:16px auto 0;padding:14px 22px;min-height:52px;
+  text-decoration:none;width:fit-content;max-width:100%;
+  color:var(--ink);background:var(--paper);
+  font-size:16px;font-weight:700;border-radius:999px;
+  box-shadow:0 3px 0 var(--paper-d);
+}
+.bytt:active{transform:translateY(2px);box-shadow:0 1px 0 var(--paper-d)}
+.bytt span{font-size:22px;line-height:1}
 .ver{margin-top:14px;text-align:center;color:rgba(246,239,226,.3);font-size:12px}
 
 /* ---------- shared game chrome ---------- */
@@ -143,23 +167,23 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 .over .box{animation:pop .22s ease-out}
 
 /* ---------- kabal ---------- */
-#kab .row,.kortbord .row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-#kab .cols,.kortbord .cols{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px;align-items:start}
+#kab .row,.kortbord .row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+#kab .cols,.kortbord .cols{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:14px;align-items:start}
 #kab .pile,#kab .col,.kortbord .pile,.kortbord .col{position:relative}
 #kab .pile,.kortbord .pile{aspect-ratio:5/7}
-#kab .slot,.kortbord .slot{position:absolute;top:0;left:0;right:0;aspect-ratio:5/7;border-radius:6px;border:1.5px dashed rgba(246,239,226,.3);display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(246,239,226,.34)}
+#kab .slot,.kortbord .slot{position:absolute;top:0;left:0;right:0;aspect-ratio:5/7;border-radius:8px;border:2px dashed rgba(246,239,226,.3);display:flex;align-items:center;justify-content:center;font-size:22px;color:rgba(246,239,226,.34)}
 #kab .pile .card,.kortbord .pile .card{top:0}
 .card{
-  position:absolute;left:0;right:0;aspect-ratio:5/7;border-radius:6px;
+  position:absolute;left:0;right:0;aspect-ratio:5/7;border-radius:8px;
   background:var(--paper);color:var(--ink);
-  box-shadow:0 1px 3px rgba(0,0,0,.45);overflow:hidden;
+  box-shadow:0 2px 5px rgba(0,0,0,.5);overflow:hidden;
   display:flex;flex-direction:column;padding:3px 0 0 3px;
 }
 .card.st{position:relative}
 .card.red{color:var(--rose)}
-.card .rk{font:650 15px/1 -apple-system,sans-serif;letter-spacing:-.03em}
-.card .su{font-size:12px;line-height:1;margin-top:1px}
-.card .big{position:absolute;right:2px;bottom:0px;font-size:26px;opacity:.16;line-height:1}
+.card .rk{font:750 19px/1 -apple-system,sans-serif;letter-spacing:-.04em}
+.card .su{font-size:15px;line-height:1;margin-top:1px}
+.card .big{position:absolute;right:2px;bottom:0px;font-size:30px;opacity:.2;line-height:1}
 .card.down{background:var(--felt-l);background-image:repeating-linear-gradient(45deg,rgba(224,161,58,.22) 0 4px,transparent 4px 8px);border:1.5px solid rgba(224,161,58,.5)}
 .card.sel{outline:3px solid var(--amber);outline-offset:-1px;transform:translateY(-4px)}
 .card.hint{outline:2px solid var(--sky)}
@@ -186,7 +210,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 #sud .cl.sel{background:var(--amber);color:#2A1D05}
 #sud .cl.bad{color:var(--rose)}
 #sud .pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:400px;margin:14px auto 0}
-#sud .pad button{background:var(--paper);color:var(--ink);border-radius:12px;min-height:54px;font:650 24px/1 -apple-system,sans-serif;box-shadow:0 3px 0 var(--paper-d)}
+#sud .pad button{position:relative;background:var(--paper);color:var(--ink);border-radius:12px;min-height:54px;font:650 24px/1 -apple-system,sans-serif;box-shadow:0 3px 0 var(--paper-d);transition:opacity .22s,transform .22s}
+#sud .pad button[data-igjen]::after{content:attr(data-igjen);position:absolute;top:4px;right:7px;font:700 11px/1 -apple-system,sans-serif;opacity:.5}
+#sud .pad button.oppbrukt{opacity:.26;transform:scale(.93);pointer-events:none;box-shadow:0 1px 0 var(--paper-d)}
 #sud .pad button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--paper-d)}
 #sud .pad button.er{background:rgba(246,239,226,.14);color:var(--paper);font-size:15px;font-weight:600;box-shadow:0 3px 0 rgba(0,0,0,.2)}
 
@@ -234,7 +260,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 #bar .board{display:grid;gap:5px;max-width:400px;margin:0 auto}
 #bar .bt{
   aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  background:var(--paper);border-radius:12px;font-size:29px;
+  background:var(--paper);border-radius:12px;font-size:clamp(19px,6.6vw,29px);
   box-shadow:0 2px 0 var(--paper-d);
   transition:transform .12s ease;
 }
@@ -262,7 +288,51 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-
 </div>
 <script>
 /* ============ felles ============ */
-var VERSJON='1.3';
+var VERSJON='1.7';
+
+/* ---------- lokal lagring: alt ligger på telefonen, ingenting sendes ---------- */
+var Lager={
+  hent:function(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } },
+  sett:function(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
+  slett:function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+/* huskede valg: vanskelighetsgrad, kategori, modus */
+var Valg={
+  hent:function(id){ return Lager.hent('sb-valg-'+id)||{}; },
+  sett:function(id,o){ Lager.sett('sb-valg-'+id,o); }
+};
+/* pågående spill - ett lagret brett per spill */
+var SPILL_NAA=null, lagreTimer=null;
+function lagreSenere(){
+  if(lagreTimer)clearTimeout(lagreTimer);
+  lagreTimer=setTimeout(lagreNaa,350);
+}
+function lagreNaa(){
+  if(lagreTimer){clearTimeout(lagreTimer);lagreTimer=null;}
+  if(!SPILL_NAA)return;
+  var d=null;
+  try{ d=SPILL_NAA.dump(); }catch(e){ d=null; }
+  if(d===null||d===undefined)Lager.slett('sb-spill-'+SPILL_NAA.id);
+  else Lager.sett('sb-spill-'+SPILL_NAA.id,{t:Date.now(),d:d});
+}
+function slettLagret(){
+  if(lagreTimer){clearTimeout(lagreTimer);lagreTimer=null;}
+  if(SPILL_NAA)Lager.slett('sb-spill-'+SPILL_NAA.id);
+}
+function lagretFor(id){ return Lager.hent('sb-spill-'+id); }
+/* skriv med en gang appen legges bort */
+window.addEventListener('pagehide',lagreNaa);
+document.addEventListener('visibilitychange',function(){ if(document.hidden)lagreNaa(); });
+
+function tidTekst(t){
+  var dag=86400000, naa=Date.now();
+  var d0=new Date(naa); d0.setHours(0,0,0,0);
+  if(t>=d0.getTime())return 'påbegynt i dag';
+  if(t>=d0.getTime()-dag)return 'påbegynt i går';
+  var n=Math.round((d0.getTime()-t)/dag)+1;
+  if(n<7)return 'påbegynt for '+n+' dager siden';
+  return 'påbegynt tidligere';
+}
 var app=document.getElementById('app'), bar=document.getElementById('bar'),
     titleEl=document.getElementById('title'), backBtn=document.getElementById('back');
 
@@ -326,6 +396,7 @@ function toast(msg,feil){
 
 function win(msg,sub,again){
   snd('seier');
+  slettLagret();
   var o=E('div','over'), b=E('div','box');
   b.appendChild(E('h3',null,msg));
   b.appendChild(E('p',null,sub));
@@ -362,7 +433,7 @@ function icon(k){
   s.innerHTML=ICONS[k]; return s;
 }
 var GAMES=[
- {id:'kabal', name:'Kabal',           sub:'Sju rader, fire stabler',      icon:'kabal'},
+ {id:'kabal', name:'Kabal',           sub:'Legg konge til ess i fire rekker',      icon:'kabal'},
  {id:'memory',name:'Memory',          sub:'Finn to like',                 icon:'memory'},
  {id:'sudoku',name:'Sudoku',          sub:'Tall fra 1 til 9',             icon:'sudoku'},
  {id:'ord',   name:'Ordsøk',          sub:'Finn ordene i rutenettet',     icon:'ord'},
@@ -372,15 +443,33 @@ var GAMES=[
  {id:'baer',  name:'Bærplukk',        sub:'Bytt to bær og lag rekker',    icon:'baer'}
 ];
 function menu(){
+  SPILL_NAA=null;
   bar.hidden=true; clear(app);
   var h=E('div','hero');
   var m=E('h1','mark'); m.innerHTML='Spille<em>bordet</em>'; h.appendChild(m);
-  h.appendChild(E('p',null,'Fem spill. Ingen reklame.'));
+  h.appendChild(E('p',null,'Åtte spill. Ingen reklame.'));
   app.appendChild(h);
   var t=E('div','tiles');
+  /* nyeste påbegynte spill øverst */
+  var nyest=null;
+  GAMES.forEach(function(g){
+    var l=lagretFor(g.id);
+    if(l&&(!nyest||l.t>nyest.t))nyest={g:g,t:l.t};
+  });
+  if(nyest){
+    var f=E('button','fortsett');
+    f.setAttribute('aria-label','Fortsett '+nyest.g.name);
+    var fd=E('div');
+    fd.appendChild(E('b',null,'Fortsett '+nyest.g.name));
+    fd.appendChild(E('span',null,tidTekst(nyest.t)));
+    f.appendChild(E('div','pil','\u21BA')); f.appendChild(fd);
+    tap(f,function(){snd('trykk');open(nyest.g);});
+    t.appendChild(f);
+  }
   GAMES.forEach(function(g){
     var b=E('button','tile'); b.setAttribute('aria-label',g.name); b.appendChild(icon(g.icon));
     var d=E('div'); d.appendChild(E('b',null,g.name)); d.appendChild(E('span',null,g.sub));
+    if(lagretFor(g.id))d.appendChild(E('span','pab','påbegynt'));
     b.appendChild(d); tap(b,function(){snd('trykk');open(g);}); t.appendChild(b);
   });
   app.appendChild(t);
@@ -393,6 +482,12 @@ function menu(){
   }
   tap(lb,function(){ SND.sett(!SND.er()); tegnLyd(); if(tbA)tbA.href=tbHref(); toast(SND.er()?'Lyd er på':'Lyd er av'); });
   tegnLyd(); app.appendChild(lb);
+  var bytt=document.createElement('a');
+  bytt.className='bytt'; bytt.href='barn.html';
+  bytt.appendChild(E('span',null,'\uD83E\uDDF8'));
+  bytt.appendChild(E('div',null,'Småspill \u2013 for barna'));
+  bytt.addEventListener('click',function(){snd('trykk');});
+  app.appendChild(bytt);
   app.appendChild(E('div','foot','Appen bruker ikke internett og samler ingen data.\nDen kan spilles uten dekning.'));
   tbA=tilbakemeldingLenke();
   app.appendChild(tbA);
@@ -402,9 +497,10 @@ function menu(){
 function open(g){
   bar.hidden=false; titleEl.textContent=g.name; clear(app);
   window.scrollTo(0,0);
-  START[g.id](app);
+  var l=lagretFor(g.id);
+  START[g.id](app, l?l.d:null);
 }
-tap(backBtn,function(){snd('trykk');menu();});
+tap(backBtn,function(){snd('trykk');lagreNaa();menu();});
 var START={};
 
 /* ============ tilbakemelding ============ */
@@ -462,23 +558,29 @@ function stableUt(colEls,data,minH){
 }
 
 /* ============ 1. KABAL ============ */
-START.kabal=function(root){
+START.kabal=function(root,lagret){
   var SU=['\u2660','\u2665','\u2666','\u2663'], RK=['','E','2','3','4','5','6','7','8','9','10','Kn','D','K'];
-  var stock,waste,found,tab,sel,moves;
+  var LV=[{t:'Lett',k:5},{t:'Middels',k:6},{t:'Vanskelig',k:7}];
+  var lvl=(Valg.hent('kabal').lvl!=null?Valg.hent('kabal').lvl:2);
+  var stock,waste,found,tab,sel,moves,ANT;
   var box=E('div','kortbord'); box.id='kab';
   var st=E('p','status'); var cb=ctrls();
+  var segEl=E('div','seg');
+  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('kabal',{lvl:lvl});segs();deal();});segEl.appendChild(b);});}
   cb.appendChild(mkBtn('Legg opp',autoUp));
   cb.appendChild(mkBtn('Nytt spill',deal,true));
-  root.appendChild(st); root.appendChild(cb); root.appendChild(box);
+  root.appendChild(segEl); root.appendChild(st); root.appendChild(cb); root.appendChild(box);
 
   var rowEl=E('div','row'), colsEl=E('div','cols');
   box.appendChild(rowEl); box.appendChild(colsEl);
 
   function deal(){
+    ANT=LV[lvl].k;
     var d=[]; for(var s=0;s<4;s++)for(var r=1;r<=13;r++)d.push({r:r,s:s,up:false});
     shuffle(d);
-    stock=[];waste=[];found=[[],[],[],[]];tab=[[],[],[],[],[],[],[]];sel=null;moves=0;
-    for(var i=0;i<7;i++)for(var j=i;j<7;j++){var c=d.pop();c.up=(j===i);tab[j].push(c);}
+    stock=[];waste=[];found=[[],[],[],[]];tab=[];sel=null;moves=0;
+    for(var q=0;q<ANT;q++)tab.push([]);
+    for(var i=0;i<ANT;i++)for(var j=i;j<ANT;j++){var c=d.pop();c.up=(j===i);tab[j].push(c);}
     // fix: deal so that column i gets i+1 cards, last one up
     stock=d;
     render();
@@ -572,8 +674,9 @@ START.kabal=function(root){
       rowEl.appendChild(pf);
     })(i);
     // tableau
+    colsEl.style.gridTemplateColumns='repeat('+ANT+',minmax(0,1fr))';
     var colEls=[];
-    for(var j=0;j<7;j++)(function(j){
+    for(var j=0;j<ANT;j++)(function(j){
       var col=E('div','col'); colEls.push(col);
       var sl=E('div','slot'); col.appendChild(sl);
       tap(sl,function(){
@@ -598,6 +701,7 @@ START.kabal=function(root){
     layout(colEls);
     var n=found[0].length+found[1].length+found[2].length+found[3].length;
     st.innerHTML='Lagt opp: <b>'+n+'</b> av 52';
+    lagreSenere();
   }
   function layout(colEls){
     var w=colEls[0].getBoundingClientRect().width||46;
@@ -622,16 +726,30 @@ START.kabal=function(root){
       win('Kabalen gikk opp!','Alle 52 kortene er på plass.',deal);
   }
   window.addEventListener('resize',function(){ if(document.getElementById('kab'))render(); });
-  deal();
+  SPILL_NAA={id:'kabal',dump:function(){
+    if(!tab)return null;
+    if(found[0].length+found[1].length+found[2].length+found[3].length===52)return null;
+    return {lvl:lvl,stock:stock,waste:waste,found:found,tab:tab};
+  }};
+  function lastInn(o){
+    if(!o||!o.tab)return false;
+    var i=LV.map(function(l){return l.k;}).indexOf(o.tab.length);
+    if(i<0)return false;
+    lvl=(o.lvl!=null?o.lvl:i); ANT=o.tab.length;
+    stock=o.stock;waste=o.waste;found=o.found;tab=o.tab;sel=null;moves=0;
+    segs(); render(); return true;
+  }
+  segs();
+  if(!lastInn(lagret))deal();
 };
 
 /* ============ 2. MEMORY ============ */
-START.memory=function(root){
+START.memory=function(root,lagret){
   var POOL=['\u{1F332}','\u{1F353}','\u{1F41F}','\u{1F98C}','\u{1F33C}','\u{1F344}','\u{1F41D}','\u{1F98B}',
             '\u26F5','\u{1F411}','\u{1F34E}','\u{1F955}','\u{1F319}','\u2B50','\u{1F3E1}','\u{1F408}',
             '\u{1F415}','\u{1F986}','\u{1F43F}','\u{1F41A}','\u{1F41E}','\u{1F334}'];
   var SIZES=[{n:6,c:3,t:'Lett'},{n:8,c:4,t:'Middels'},{n:12,c:4,t:'Mange'}];
-  var lvl=1, cards, open=[], found, tries, lock;
+  var lvl=(Valg.hent('memory').lvl!=null?Valg.hent('memory').lvl:1), cards, open=[], found, tries, lock;
   var st=E('p','status'), grid=E('div','grid'), holder=E('div'); holder.id='mem';
   holder.appendChild(grid);
   var segEl=seg(SIZES.map(function(s){return s.t;}),lvl,function(i){lvl=i;rebuild();});
@@ -639,7 +757,7 @@ START.memory=function(root){
   root.appendChild(segEl); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
   function rebuild(){
     clear(segEl);
-    SIZES.forEach(function(s,i){var b=E('button',i===lvl?'on':'',s.t);tap(b,function(){lvl=i;rebuild();});segEl.appendChild(b);});
+    SIZES.forEach(function(s,i){var b=E('button',i===lvl?'on':'',s.t);tap(b,function(){lvl=i;Valg.sett('memory',{lvl:lvl});rebuild();});segEl.appendChild(b);});
     start();
   }
   function start(){
@@ -647,7 +765,7 @@ START.memory=function(root){
     var pick=shuffle(POOL.slice()).slice(0,cfg.n);
     cards=shuffle(pick.concat(pick)).map(function(s){return {s:s,up:false,done:false};});
     open=[];found=0;tries=0;lock=false;
-    grid.style.gridTemplateColumns='repeat('+cfg.c+',1fr)';
+    grid.style.gridTemplateColumns='repeat('+cfg.c+',minmax(0,1fr))';
     render();
   }
   function render(){
@@ -661,6 +779,7 @@ START.memory=function(root){
     });
     var cfg=SIZES[lvl];
     st.innerHTML='Par funnet: <b>'+found+'</b> av '+cfg.n+' \u00B7 Forsøk: '+tries;
+    lagreSenere();
   }
   function flip(i){
     var c=cards[i];
@@ -680,19 +799,36 @@ START.memory=function(root){
       }
     }
   }
-  start();
+  SPILL_NAA={id:'memory',dump:function(){
+    if(!cards||lock)return null;
+    if(found===0&&tries===0)return null;
+    if(found===SIZES[lvl].n)return null;
+    return {lvl:lvl,found:found,tries:tries,
+      cards:cards.map(function(c){return {s:c.s,up:false,done:c.done};})};
+  }};
+  function lastInn(o){
+    if(!o||!o.cards||o.lvl==null)return false;
+    lvl=o.lvl; cards=o.cards; found=o.found; tries=o.tries; open=[]; lock=false;
+    grid.style.gridTemplateColumns='repeat('+SIZES[lvl].c+',1fr)';
+    rebuildSeg(); render(); return true;
+  }
+  function rebuildSeg(){
+    clear(segEl);
+    SIZES.forEach(function(s,i){var b=E('button',i===lvl?'on':'',s.t);tap(b,function(){lvl=i;Valg.sett('memory',{lvl:lvl});rebuild();});segEl.appendChild(b);});
+  }
+  if(!lastInn(lagret)){ rebuildSeg(); start(); }
 };
 
 /* ============ 3. SUDOKU ============ */
-START.sudoku=function(root){
+START.sudoku=function(root,lagret){
   var LV=[{t:'Lett',g:45},{t:'Middels',g:36},{t:'Vanskelig',g:30}];
-  var lvl=0, puz, sol, cur, sel=-1;
+  var lvl=Valg.hent('sudoku').lvl||0, puz, sol, cur, sel=-1;
   var st=E('p','status'), board=E('div','board'), pad=E('div','pad'), holder=E('div'); holder.id='sud';
   holder.appendChild(board); holder.appendChild(pad);
   var segEl=E('div','seg');
   var cb=ctrls(); cb.appendChild(mkBtn('Ny oppgave',start,true));
   root.appendChild(segEl); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
-  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){lvl=i;segs();start();});segEl.appendChild(b);});}
+  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('sudoku',{lvl:lvl});segs();start();});segEl.appendChild(b);});}
 
   function cands(g,i){
     var r=Math.floor(i/9),c=i%9,br=r-r%3,bc=c-c%3,used=0;
@@ -763,12 +899,20 @@ START.sudoku=function(root){
       board.appendChild(e);
     })(i);
     clear(pad);
+    var brukt=[0,0,0,0,0,0,0,0,0,0];
+    cur.forEach(function(x){ if(x)brukt[x]++; });
     for(var v=1;v<=9;v++)(function(v){
-      var b=E('button',null,String(v)); tap(b,function(){put(v);}); pad.appendChild(b);
+      var igjen=9-brukt[v], ferdig=igjen<=0;
+      var b=E('button',ferdig?'oppbrukt':'',String(v));
+      if(!ferdig)b.setAttribute('data-igjen',igjen);
+      b.disabled=ferdig;
+      b.setAttribute('aria-label',ferdig?(v+', alle er plassert'):(v+', '+igjen+' igjen'));
+      tap(b,function(){put(v);}); pad.appendChild(b);
     })(v);
     var er=E('button','er','Slett'); tap(er,function(){put(0);}); pad.appendChild(er);
     var left=cur.filter(function(x){return !x;}).length;
     st.innerHTML='Tomme ruter: <b>'+left+'</b>';
+    lagreSenere();
   }
   function put(v){
     if(sel<0){ snd('nei'); toast('Trykk på en rute først',true); return; }
@@ -779,11 +923,22 @@ START.sudoku=function(root){
     if(cur.every(function(x,i){return x===sol[i];}))
       win('Ferdig!','Alle tallene stemmer.',start);
   }
-  segs(); start();
+  SPILL_NAA={id:'sudoku',dump:function(){
+    if(!puz||!cur)return null;
+    if(cur.every(function(x,i){return x===sol[i];}))return null;
+    if(cur.every(function(x,i){return x===puz[i];}))return null;
+    return {lvl:lvl,puz:puz,sol:sol,cur:cur};
+  }};
+  function lastInn(o){
+    if(!o||!o.puz||o.puz.length!==81)return false;
+    lvl=o.lvl; puz=o.puz; sol=o.sol; cur=o.cur; sel=-1;
+    segs(); render(); return true;
+  }
+  if(!lastInn(lagret)){ segs(); start(); }
 };
 
 /* ============ 4. ORDSØK ============ */
-START.ord=function(root){
+START.ord=function(root,lagret){
   var CATS=[
     {t:'Dyr',    w:['ELG','REV','HARE','BJØRN','ØRN','LAKS','RYPE','SAU','GEIT','MÅKE','MUS','ULV']},
     {t:'Natur',  w:['FJELL','SKOG','VANN','SNØ','ELV','STRAND','HIMMEL','FURU','MYR','STEIN','TÅKE','SOL']},
@@ -799,15 +954,16 @@ START.ord=function(root){
     {t:'Små ruter',   n:11, k:9, f:18, d:[[1,0],[0,1],[1,1],[1,-1]]}
   ];
   var FILL='AABBDEEEFGHIIJKLLMNNOOPRRSSTTUVÆØÅ';
-  var lvl=0, cat=0, N, grid, words, pick=null, foundCells;
+  var _v=Valg.hent('ord');
+  var lvl=_v.lvl||0, cat=_v.cat||0, N, grid, words, pick=null, foundCells;
   var st=E('p','status'), board=E('div','board'), list=E('ul','words'), holder=E('div'); holder.id='ord';
   holder.appendChild(board); holder.appendChild(list);
   var segL=E('div','seg'), segC=E('div','seg seg2');
   var cb=ctrls(); cb.appendChild(mkBtn('Nytt rutenett',start,true));
   root.appendChild(segL); root.appendChild(segC); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
   function segs(){
-    clear(segL); LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){lvl=i;segs();start();});segL.appendChild(b);});
-    clear(segC); CATS.forEach(function(c,i){var b=E('button',i===cat?'on':'',c.t);tap(b,function(){cat=i;segs();start();});segC.appendChild(b);});
+    clear(segL); LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('ord',{lvl:lvl,cat:cat});segs();start();});segL.appendChild(b);});
+    clear(segC); CATS.forEach(function(c,i){var b=E('button',i===cat?'on':'',c.t);tap(b,function(){snd('trykk');cat=i;Valg.sett('ord',{lvl:lvl,cat:cat});segs();start();});segC.appendChild(b);});
   }
   function start(){
     var L=LV[lvl]; N=L.n;
@@ -840,7 +996,7 @@ START.ord=function(root){
     return null;
   }
   function render(){
-    clear(board); board.style.gridTemplateColumns='repeat('+N+',1fr)';
+    clear(board); board.style.gridTemplateColumns='repeat('+N+',minmax(0,1fr))';
     for(var i=0;i<N*N;i++)(function(i){
       var cls='lt'+(foundCells[i]?' got':'')+(pick===i?' pick':'');
       var e=E('div',cls,grid[i]); tap(e,function(){hit(i);}); board.appendChild(e);
@@ -849,6 +1005,7 @@ START.ord=function(root){
     words.forEach(function(o){ list.appendChild(E('li',o.got?'got':'',o.w)); });
     var g=words.filter(function(o){return o.got;}).length;
     st.innerHTML='Funnet: <b>'+g+'</b> av '+words.length;
+    lagreSenere();
   }
   function hit(i){
     if(pick===null){snd('trykk');pick=i;render();return;}
@@ -868,20 +1025,34 @@ START.ord=function(root){
         setTimeout(function(){win('Alle ord funnet!','Kategori: '+CATS[cat].t,start);},300);
     } else { snd('nei'); toast('Ikke et ord fra lista',true); pick=i; render(); }
   }
-  segs(); start();
+  SPILL_NAA={id:'ord',dump:function(){
+    if(!grid||!words.length)return null;
+    var g=words.filter(function(o){return o.got;}).length;
+    if(g===0||g===words.length)return null;
+    return {lvl:lvl,cat:cat,N:N,grid:grid,foundCells:foundCells,
+      words:words.map(function(o){return {w:o.w,cells:o.cells,got:o.got};})};
+  }};
+  function lastInn(o){
+    if(!o||!o.grid||!o.words)return false;
+    lvl=o.lvl; cat=o.cat; N=o.N; grid=o.grid; words=o.words;
+    foundCells=o.foundCells||{}; pick=null;
+    board.style.setProperty('--lt',LV[lvl].f+'px');
+    segs(); render(); return true;
+  }
+  if(!lastInn(lagret)){ segs(); start(); }
 };
 
 /* ============ 5. FARGESORTERING ============ */
-START.farge=function(root){
+START.farge=function(root,lagret){
   var COL=['#D94F45','#3D6FD4','#3FA05A','#E8C33A','#8B5BC0','#E8853A','#E07AA8','#46B8C4'];
   var LV=[{c:4,e:2,t:'Lett'},{c:6,e:2,t:'Middels'},{c:8,e:2,t:'Vanskelig'}];
-  var CAP=4, lvl=0, tubes, sel=-1, hist;
+  var CAP=4, lvl=Valg.hent('farge').lvl||0, tubes, sel=-1, hist;
   var st=E('p','status'), area=E('div','tubes'), holder=E('div'); holder.id='far';
   holder.appendChild(area);
   var segEl=E('div','seg'), undoB;
   var cb=ctrls(); undoB=mkBtn('Angre',undo,true); cb.appendChild(undoB); cb.appendChild(mkBtn('Ny bane',start,true));
   root.appendChild(segEl); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
-  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){lvl=i;segs();start();});segEl.appendChild(b);});}
+  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('farge',{lvl:lvl});segs();start();});segEl.appendChild(b);});}
 
   function key(s){return s.map(function(t){return t.join(',');}).sort().join('|');}
   function done(s){return s.every(function(t){return t.length===0||(t.length===CAP&&t.every(function(x){return x===t[0];}));});}
@@ -949,6 +1120,7 @@ START.farge=function(root){
     undoB.disabled=!hist.length;
     var ok=tubes.filter(function(t){return t.length===CAP&&t.every(function(x){return x===t[0];});}).length;
     st.innerHTML='Ferdige glass: <b>'+ok+'</b> av '+LV[lvl].c;
+    lagreSenere();
   }
   function shake(i){
     var el=area.children[i]; if(!el)return;
@@ -975,22 +1147,36 @@ START.farge=function(root){
       sel=-1; render();
     }
   }
-  segs(); start();
+  SPILL_NAA={id:'farge',dump:function(){
+    if(!tubes||done(tubes)||!hist.length)return null;
+    return {lvl:lvl,tubes:tubes,hist:hist.slice(-30)};
+  }};
+  function lastInn(o){
+    if(!o||!o.tubes||!o.tubes.length)return false;
+    lvl=o.lvl; tubes=o.tubes; hist=o.hist||[]; sel=-1;
+    segs(); render(); return true;
+  }
+  if(!lastInn(lagret)){ segs(); start(); }
 };
 
 /* ============ 6. EDDERKOPPKABAL (én farge, 52 kort) ============ */
-START.edd=function(root){
-  var tab, lager, ferdige, sel;
+START.edd=function(root,lagret){
+  var LV=[{t:'Lett',f:1},{t:'Middels',f:2},{t:'Vanskelig',f:4}];
+  var lvl=(Valg.hent('edd').lvl!=null?Valg.hent('edd').lvl:0);
+  var tab, lager, ferdige, sel, FARGER;
   var st=E('p','status'), cb=ctrls(), delB;
   var box=E('div','kortbord'); box.id='edd';
   var colsEl=E('div','cols'); box.appendChild(colsEl);
+  var segEl=E('div','seg');
+  function segs(){clear(segEl);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('edd',{lvl:lvl});segs();gi();});segEl.appendChild(b);});}
   delB=mkBtn('Del ut kort',delUt);
   cb.appendChild(delB); cb.appendChild(mkBtn('Nytt spill',gi,true));
-  root.appendChild(st); root.appendChild(cb); root.appendChild(box);
+  root.appendChild(segEl); root.appendChild(st); root.appendChild(cb); root.appendChild(box);
 
   function gi(){
+    FARGER=LV[lvl].f;
     var d=[];
-    for(var g=0;g<4;g++)for(var r=1;r<=13;r++)d.push({r:r,s:0,up:false});
+    for(var g=0;g<4;g++)for(var r=1;r<=13;r++)d.push({r:r,s:g%FARGER,up:false});
     shuffle(d);
     tab=[[],[],[],[],[],[],[]]; ferdige=0; sel=null;
     for(var i=0;i<7;i++)for(var j=i;j<7;j++){var c=d.pop();c.up=(j===i);tab[j].push(c);}
@@ -1003,6 +1189,7 @@ START.edd=function(root){
     for(var i=idx;i<t.length;i++){
       if(!t[i].up)return false;
       if(i>idx&&t[i].r!==t[i-1].r-1)return false;
+      if(i>idx&&t[i].s!==t[i-1].s)return false;
     }
     return true;
   }
@@ -1025,6 +1212,7 @@ START.edd=function(root){
     for(var i=0;i<13;i++){
       var c=t[s+i];
       if(!c.up||c.r!==13-i)return;
+      if(c.s!==t[s].s)return;
     }
     t.splice(s); ferdige++;
     if(t.length&&!t[t.length-1].up)t[t.length-1].up=true;
@@ -1072,18 +1260,33 @@ START.edd=function(root){
     stableUt(colEls,tab,200);
     delB.disabled=!lager.length;
     st.innerHTML='Ferdige rekker: <b>'+ferdige+'</b> av 4 \u00B7 Igjen i bunken: '+lager.length;
+    lagreSenere();
   }
   function sjekk(){
     if(ferdige===4)win('Kabalen gikk opp!','Alle fire rekkene er ferdige.',gi);
   }
   window.addEventListener('resize',function(){ if(document.getElementById('edd'))tegn(); });
-  gi();
+  SPILL_NAA={id:'edd',dump:function(){
+    if(!tab||ferdige===4)return null;
+    if(lager.length===24&&ferdige===0)return null;
+    return {lvl:lvl,tab:tab,lager:lager,ferdige:ferdige};
+  }};
+  function lastInn(o){
+    if(!o||!o.tab||o.tab.length!==7)return false;
+    if(o.lvl!=null)lvl=o.lvl;
+    FARGER=LV[lvl].f;
+    tab=o.tab; lager=o.lager; ferdige=o.ferdige; sel=null;
+    segs(); tegn(); return true;
+  }
+  segs();
+  if(!lastInn(lagret))gi();
 };
 
 /* ============ 7. MINESVEIPER ============ */
-START.mine=function(root){
+START.mine=function(root,lagret){
   var LV=[{t:'Lett',c:7,r:9,m:8},{t:'Middels',c:9,r:12,m:18},{t:'Vanskelig',c:10,r:14,m:28}];
-  var lvl=0, C, R, M, felt, apen, flagg, startet, tapt, ferdig, modus='grav';
+  var _vm=Valg.hent('mine');
+  var lvl=_vm.lvl||0, C, R, M, felt, apen, flagg, startet, tapt, ferdig, modus=_vm.modus||'grav';
   var st=E('p','status'), board=E('div','board'), holder=E('div'); holder.id='min';
   holder.appendChild(board);
   var segL=E('div','seg'), segM=E('div','seg seg2');
@@ -1091,11 +1294,11 @@ START.mine=function(root){
   root.appendChild(segL); root.appendChild(segM); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
   function segs(){
     clear(segL);
-    LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;segs();start();});segL.appendChild(b);});
+    LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('mine',{lvl:lvl,modus:modus});segs();start();});segL.appendChild(b);});
     clear(segM);
     [['grav','\u26CF\uFE0F Grav'],['flagg','\uD83D\uDEA9 Sett flagg']].forEach(function(o){
       var b=E('button',modus===o[0]?'on':'',o[1]);
-      tap(b,function(){snd('trykk');modus=o[0];segs();if(felt)tegn();});
+      tap(b,function(){snd('trykk');modus=o[0];Valg.sett('mine',{lvl:lvl,modus:modus});segs();if(felt)tegn();});
       segM.appendChild(b);
     });
   }
@@ -1114,7 +1317,7 @@ START.mine=function(root){
     var L=LV[lvl]; C=L.c; R=L.r; M=L.m;
     felt=new Array(C*R).fill(0); apen={}; flagg={};
     startet=false; tapt=false; ferdig=false;
-    board.style.gridTemplateColumns='repeat('+C+',1fr)';
+    board.style.gridTemplateColumns='repeat('+C+',minmax(0,1fr))';
     board.style.maxWidth=Math.min(420,C*46)+'px';
     tegn();
   }
@@ -1178,21 +1381,35 @@ START.mine=function(root){
     })(i);
     var f=Object.keys(flagg).length;
     st.innerHTML='Miner igjen: <b>'+(M-f)+'</b> \u00B7 '+(modus==='grav'?'du graver':'du setter flagg');
+    lagreSenere();
   }
-  segs(); start();
+  SPILL_NAA={id:'mine',dump:function(){
+    if(!felt||!startet||tapt||ferdig)return null;
+    return {lvl:lvl,C:C,R:R,M:M,felt:felt,apen:apen,flagg:flagg};
+  }};
+  function lastInn(o){
+    if(!o||!o.felt||!o.C)return false;
+    lvl=o.lvl; C=o.C; R=o.R; M=o.M; felt=o.felt;
+    apen=o.apen||{}; flagg=o.flagg||{};
+    startet=true; tapt=false; ferdig=false;
+    board.style.gridTemplateColumns='repeat('+C+',minmax(0,1fr))';
+    board.style.maxWidth=Math.min(420,C*46)+'px';
+    segs(); tegn(); return true;
+  }
+  if(!lastInn(lagret)){ segs(); start(); }
 };
 
 /* ============ 8. BÆRPLUKK ============ */
-START.baer=function(root){
+START.baer=function(root,lagret){
   var ALLE=['\uD83C\uDF53','\uD83E\uDED0','\uD83C\uDF52','\uD83C\uDF47','\uD83C\uDF4E','\uD83C\uDF51'];
   var LV=[{t:'Lett',n:4,mal:12},{t:'Middels',n:5,mal:18},{t:'Vanskelig',n:6,mal:25}];
-  var C=7, R=8, lvl=0, rute, sort, malBaer, plukket, sel, laast;
+  var C=7, R=8, lvl=Valg.hent('baer').lvl||0, rute, sort, malBaer, plukket, sel, laast;
   var st=E('p','status'), malEl=E('div','mal'), board=E('div','board'), holder=E('div'); holder.id='bar';
   holder.appendChild(malEl); holder.appendChild(board);
   var segL=E('div','seg');
   var cb=ctrls(); cb.appendChild(mkBtn('Nytt brett',start,true));
   root.appendChild(segL); root.appendChild(st); root.appendChild(cb); root.appendChild(holder);
-  function segs(){clear(segL);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;segs();start();});segL.appendChild(b);});}
+  function segs(){clear(segL);LV.forEach(function(l,i){var b=E('button',i===lvl?'on':'',l.t);tap(b,function(){snd('trykk');lvl=i;Valg.sett('baer',{lvl:lvl});segs();start();});segL.appendChild(b);});}
 
   function ny(){ return sort[Math.floor(Math.random()*sort.length)]; }
   function tref(g){
@@ -1236,7 +1453,7 @@ START.baer=function(root){
     malBaer=sort[Math.floor(Math.random()*sort.length)];
     plukket=0; sel=null; laast=false;
     rute=nyttBrett();
-    board.style.gridTemplateColumns='repeat('+C+',1fr)';
+    board.style.gridTemplateColumns='repeat('+C+',minmax(0,1fr))';
     tegn();
   }
   function tegn(vekk){
@@ -1252,6 +1469,7 @@ START.baer=function(root){
     var b=E('b',null,plukket+' av '+LV[lvl].mal);
     malEl.appendChild(b);
     st.textContent='Bytt to bær som ligger inntil hverandre';
+    if(!laast)lagreSenere();
   }
   function inntil(a,b){
     var ra=Math.floor(a/C), ca=a%C, rb=Math.floor(b/C), cb2=b%C;
@@ -1301,7 +1519,19 @@ START.baer=function(root){
       setTimeout(loes,160);
     },200);
   }
-  segs(); start();
+  SPILL_NAA={id:'baer',dump:function(){
+    if(!rute||laast||!plukket)return null;
+    if(plukket>=LV[lvl].mal)return null;
+    return {lvl:lvl,sort:sort,malBaer:malBaer,plukket:plukket,rute:rute};
+  }};
+  function lastInn(o){
+    if(!o||!o.rute||o.rute.length!==C*R)return false;
+    lvl=o.lvl; sort=o.sort; malBaer=o.malBaer; plukket=o.plukket; rute=o.rute;
+    sel=null; laast=false;
+    board.style.gridTemplateColumns='repeat('+C+',minmax(0,1fr))';
+    segs(); tegn(); return true;
+  }
+  if(!lastInn(lagret)){ segs(); start(); }
 };
 
 menu();

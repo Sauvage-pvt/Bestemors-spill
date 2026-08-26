@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Småspill">
+<meta name="theme-color" content="#FFF5E6">
+<meta name="color-scheme" content="light">
+<title>Spillebordet – Småspill</title>
+<link rel="manifest" href="manifest-barn.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{color-scheme:light;background:#FFF5E6}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  background:#FFF5E6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  color:#3A2E22;display:flex;flex-direction:column;touch-action:manipulation;
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+}
+.topbar{
+  background:linear-gradient(135deg,#FF8B5E,#FFC93D);
+  padding:calc(10px + var(--safe-t)) 14px 10px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 2px 10px rgba(0,0,0,.12);flex-shrink:0;
+}
+.topbar button{background:rgba(255,255,255,.25);border:none;color:#fff;font-size:22px;
+  width:44px;height:44px;border-radius:12px;cursor:pointer;line-height:1;font-weight:700}
+.topbar button:active{background:rgba(255,255,255,.45)}
+.topbar h1{font-size:19px;font-weight:700;flex:1;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+#app{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 16px calc(20px + var(--safe-b));
+  display:flex;flex-direction:column;align-items:center}
+.wrap{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center}
+
+/* MENY */
+.menu{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;max-width:420px;margin-top:8px}
+.tile{aspect-ratio:1;border:none;border-radius:22px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;color:#fff;font-size:46px;
+  box-shadow:0 5px 0 rgba(0,0,0,.14),0 8px 18px rgba(0,0,0,.1);transition:transform .07s,box-shadow .07s}
+.tile:active{transform:translateY(5px);box-shadow:0 0 0 rgba(0,0,0,.14),0 3px 8px rgba(0,0,0,.1)}
+.tile span{font-size:15px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.t1{background:linear-gradient(135deg,#FF6B6B,#FF9472)}
+.t2{background:linear-gradient(135deg,#4ECDC4,#44A08D)}
+.t3{background:linear-gradient(135deg,#FFC93D,#FF9F1C)}
+.t4{background:linear-gradient(135deg,#A78BFA,#8B5CF6)}
+.t5{background:linear-gradient(135deg,#63B3ED,#4299E1)}
+.t6{background:linear-gradient(135deg,#F58BB8,#E8639B)}
+.menuhint{margin-top:18px;font-size:13px;color:#8A7A66;text-align:center;line-height:1.5}
+
+/* NIVÅ-KNAPPER */
+.seg{display:flex;gap:8px;justify-content:center;margin-bottom:12px;width:100%}
+.seg button{flex:1;padding:11px 6px;border:2px solid #E4D7C3;border-radius:12px;background:#fff;
+  font-weight:700;font-size:14px;color:#8A7A66;cursor:pointer;font-family:inherit}
+.seg button:active{transform:scale(.96)}
+.seg button.on{background:#FF8B5E;color:#fff;border-color:#FF8B5E}
+
+/* FORKLARING */
+.hjelp{background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:14px;width:100%;
+  font-size:14px;line-height:1.5;color:#5C4E3E;box-shadow:0 2px 6px rgba(0,0,0,.06);
+  display:flex;gap:10px;align-items:flex-start}
+.hjelp .ik{font-size:22px;flex-shrink:0;line-height:1.2}
+
+/* STATUS */
+.stat{font-size:15px;font-weight:700;color:#5C4E3E;margin-bottom:12px;text-align:center;min-height:22px}
+.stat b{color:#FF6B6B}
+
+/* KNAPP */
+.knapprad{display:flex;gap:10px;justify-content:center;margin-top:14px;width:100%}
+.kn{padding:12px 20px;border:none;border-radius:12px;background:#fff;border:2px solid #E4D7C3;
+  font-weight:700;font-size:15px;color:#5C4E3E;cursor:pointer;font-family:inherit}
+.kn:active{transform:scale(.96)}
+.kn.pri{background:#4ECDC4;color:#fff;border-color:#4ECDC4}
+
+/* FARGESORTERING */
+#far .glassrad{display:flex;gap:10px;justify-content:center;align-items:flex-end;flex-wrap:wrap;width:100%}
+#far .glass{width:52px;border-radius:8px 8px 16px 16px;border:3px solid #D8C9B2;background:#fff;
+  display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;
+  gap:3px;padding:6px 4px;cursor:pointer;transition:transform .1s}
+#far .glass.valgt{border-color:#FF6B6B;transform:translateY(-10px)}
+#far .glass.ok{border-color:#4ECDC4;background:#F0FFFC}
+#far .kule{width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  box-shadow:inset 0 -3px 5px rgba(0,0,0,.18),inset 0 3px 4px rgba(255,255,255,.5)}
+#far .kule.loft{transform:translateY(-6px)}
+.k0{background:#FF5252}.k1{background:#42C767}.k2{background:#4A9DFF}
+.k3{background:#FFD400}.k4{background:#B45CFF}
+
+/* FORMER */
+#form .maal{background:#fff;border-radius:18px;padding:14px 20px;margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 3px 10px rgba(0,0,0,.08)}
+#form .maal .stor{font-size:56px;line-height:1}
+#form .maal .tx{font-size:15px;font-weight:700;color:#5C4E3E}
+#form .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+#form .rute{aspect-ratio:1;border-radius:18px;border:3px solid #E4D7C3;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:44px;cursor:pointer;transition:all .1s}
+#form .rute:active{transform:scale(.93)}
+#form .rute.rett{border-color:#4ECDC4;background:#EFFFFC;animation:pling .45s}
+#form .rute.feil{border-color:#FF6B6B;animation:rist .3s}
+@keyframes pling{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes rist{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* SUDOKU */
+#sud .brett{display:grid;grid-template-columns:repeat(4,1fr);gap:0;width:100%;max-width:300px;
+  aspect-ratio:1;background:#3A2E22;border:4px solid #3A2E22;border-radius:12px;overflow:hidden}
+#sud .celle{background:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;cursor:pointer;border:1px solid #E4D7C3}
+#sud .celle.b1{border-right-width:3px;border-right-color:#3A2E22}
+#sud .celle.b2{border-bottom-width:3px;border-bottom-color:#3A2E22}
+#sud .celle.gitt{background:#F2EADD;color:#8A7A66;cursor:default}
+#sud .celle.min{color:#4A9DFF}
+#sud .celle.valgt{background:#FFF3C4;box-shadow:inset 0 0 0 3px #FFC93D}
+#sud .celle.feil{background:#FFE9E5;animation:rist .35s}
+#sud .tallrad{display:flex;gap:8px;justify-content:center;margin-top:16px;width:100%}
+#sud .tk{position:relative;flex:1;max-width:60px;aspect-ratio:1;border-radius:14px;border:3px solid #FFC93D;
+  background:#fff;font-size:26px;font-weight:700;color:#FF9F1C;cursor:pointer;font-family:inherit;
+  transition:opacity .22s,transform .22s}
+#sud .tk[data-igjen]::after{content:attr(data-igjen);position:absolute;top:3px;right:6px;font-size:11px;font-weight:700;opacity:.55}
+#sud .tk.oppbrukt{opacity:.25;transform:scale(.92);pointer-events:none}
+#sud .tk:active{background:#FFC93D;color:#fff}
+#sud .tk.visk{border-color:#FF6B6B;color:#FF6B6B;font-size:22px}
+
+/* BÆRPLUKK */
+#baer .brett{display:grid;gap:6px;width:100%;max-width:340px}
+#baer .bt{aspect-ratio:1;border-radius:14px;background:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:30px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.08);
+  transition:transform .1s}
+#baer .bt:active{transform:scale(.9)}
+#baer .bt.valgt{box-shadow:0 0 0 4px #FF6B6B;transform:scale(1.06)}
+#baer .bt.borte{animation:vekk .25s forwards}
+@keyframes vekk{to{transform:scale(0);opacity:0}}
+
+/* TRE PÅ RAD */
+#tre .brett{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:300px}
+#tre .rute{aspect-ratio:1;border-radius:18px;background:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:56px;font-weight:700;cursor:pointer;
+  box-shadow:0 3px 6px rgba(0,0,0,.08);line-height:1}
+#tre .rute:active{transform:scale(.95)}
+#tre .rute.x{color:#FF6B6B}
+#tre .rute.o{color:#4A9DFF}
+#tre .rute.seier{background:#EFFFFC;box-shadow:0 0 0 4px #4ECDC4}
+#tre .poeng{display:flex;gap:16px;justify-content:center;margin-bottom:14px;font-size:14px;font-weight:700}
+#tre .poeng div{background:#fff;padding:8px 16px;border-radius:12px;box-shadow:0 2px 5px rgba(0,0,0,.06)}
+
+/* BOBLESKYTER */
+#bob .nivaagrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:100%}
+#bob .nv{aspect-ratio:1;border:2px solid #E4D7C3;border-radius:16px;background:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:19px;font-weight:700;color:#5C4E3E;cursor:pointer;font-family:inherit}
+#bob .nv:active{transform:scale(.94)}
+#bob .nv.klart{background:linear-gradient(160deg,#FFF3D6,#FFE4B0);border-color:#FFC93D}
+#bob .nv .stj{font-size:10px;letter-spacing:1px;color:#FF9F1C;height:12px;line-height:1}
+#bob canvas{width:100%;max-width:400px;display:block;margin:0 auto;
+  border-radius:18px;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.08);touch-action:none}
+#bob .bunn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+#bob .neste{display:flex;align-items:center;gap:9px;background:#fff;border:2px solid #E4D7C3;
+  border-radius:14px;padding:10px 16px;font-size:14px;font-weight:700;color:#5C4E3E;
+  cursor:pointer;font-family:inherit}
+#bob .neste:active{transform:scale(.96)}
+#bob .neste b{font-size:22px;line-height:1}
+#bob .slutt{background:#fff;border-radius:18px;padding:22px 20px;text-align:center;
+  width:100%;max-width:320px;margin:14px auto 0;box-shadow:0 4px 14px rgba(0,0,0,.1)}
+#bob .slutt .stj{font-size:30px;letter-spacing:5px;margin-bottom:8px;color:#FF9F1C}
+#bob .slutt h3{font-size:21px;margin-bottom:6px;color:#3A2E22}
+#bob .slutt p{font-size:15px;color:#8A7A66;margin-bottom:14px;line-height:1.4}
+
+/* BYTTEKNAPP MELLOM APPENE */
+.bytt{display:flex;align-items:center;justify-content:center;gap:10px;margin:20px auto 0;
+  padding:14px 22px;width:fit-content;max-width:100%;text-decoration:none;
+  background:#fff;border:2px solid #E4D7C3;border-radius:999px;
+  font-size:15px;font-weight:700;color:#5C4E3E;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.bytt:active{transform:scale(.97);background:#FFF9EF}
+.bytt span{font-size:22px;line-height:1}
+
+/* TOAST */
+#toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-b));transform:translateX(-50%) translateY(20px);
+  background:#3A2E22;color:#fff;padding:12px 22px;border-radius:14px;font-size:15px;font-weight:600;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:100;max-width:88%;text-align:center}
+#toast.vis{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.jubel{background:#4ECDC4}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button id="tilbake" aria-label="Tilbake til menyen" style="visibility:hidden">‹</button>
+  <h1 id="tittel">Småspill</h1>
+  <button id="lydkn" aria-label="Lyd av og på">🔊</button>
+</div>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+var VERSJON='2.3';
+var app=document.getElementById('app');
+var tittelEl=document.getElementById('tittel');
+var tilbakeEl=document.getElementById('tilbake');
+var lydEl=document.getElementById('lydkn');
+var toastEl=document.getElementById('toast');
+
+function E(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function tom(e){while(e.firstChild)e.removeChild(e.firstChild);}
+function tap(e,f){e.addEventListener('click',f);}
+function stokk(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ---------- LAGRING ---------- */
+var Lag={
+  les:function(k,d){try{var v=localStorage.getItem('sb-b-'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},
+  skriv:function(k,v){try{localStorage.setItem('sb-b-'+k,JSON.stringify(v));}catch(e){}}
+};
+
+/* ---------- LYD ---------- */
+var lydPaa=Lag.les('lyd',true);
+var SND=(function(){
+  var ctx=null;
+  function ini(){ if(ctx)return; try{var C=window.AudioContext||window.webkitAudioContext; if(C)ctx=new C();}catch(e){ctx=null;} }
+  function tone(f,st,d,v,ty){
+    if(!lydPaa)return; ini(); if(!ctx)return;
+    if(ctx.state==='suspended'){try{ctx.resume();}catch(e){}}
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=ty||'sine'; o.frequency.value=f;
+    var t=ctx.currentTime+st;
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(v,t+.012);
+    g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t+d+.03);
+  }
+  return {
+    trykk:function(){tone(440,0,.06,.10);},
+    ok:function(){tone(587,0,.12,.12);tone(784,.07,.14,.10);},
+    nei:function(){tone(200,0,.14,.10,'triangle');},
+    pling:function(){tone(880,0,.10,.12);},
+    jubel:function(){[523,659,784,1047].forEach(function(f,i){tone(f,i*.09,.22,.11);});}
+  };
+}());
+function settLydIkon(){lydEl.textContent=lydPaa?'🔊':'🔇';}
+tap(lydEl,function(){lydPaa=!lydPaa;Lag.skriv('lyd',lydPaa);settLydIkon();if(lydPaa)SND.ok();});
+settLydIkon();
+
+var toastT=null;
+function toast(m,jubel){
+  toastEl.textContent=m;
+  toastEl.className=jubel?'vis jubel':'vis';
+  if(toastT)clearTimeout(toastT);
+  toastT=setTimeout(function(){toastEl.className='';},1900);
+}
+
+/* ---------- NIVÅ-VELGER ---------- */
+function nivaaRad(navn,hentValgt,settValgt){
+  var d=E('div','seg');
+  function tegnRad(){
+    tom(d);
+    navn.forEach(function(n,i){
+      var b=E('button',i===hentValgt()?'on':'',n);
+      b.setAttribute('aria-pressed',i===hentValgt()?'true':'false');
+      tap(b,function(){SND.trykk();settValgt(i);tegnRad();});
+      d.appendChild(b);
+    });
+  }
+  tegnRad();
+  return d;
+}
+function hjelp(ikon,tekst){
+  var d=E('div','hjelp');
+  d.appendChild(E('span','ik',ikon));
+  d.appendChild(E('div',null,tekst));
+  return d;
+}
+
+/* ---------- MENY ---------- */
+var SPILL=[
+  {id:'far', navn:'Farger',    ikon:'🔴', kl:'t1'},
+  {id:'form',navn:'Former',    ikon:'⭐', kl:'t2'},
+  {id:'sud', navn:'Sudoku',    ikon:'🔢', kl:'t3'},
+  {id:'baer',navn:'Bærplukk',  ikon:'🍓', kl:'t4'},
+  {id:'tre', navn:'Tre på rad',ikon:'❌', kl:'t5'},
+  {id:'bob', navn:'Bobler',    ikon:'🔵', kl:'t6'}
+];
+function meny(){
+  tilbakeEl.style.visibility='hidden';
+  tittelEl.textContent='Småspill';
+  tom(app);
+  var w=E('div','wrap');
+  var m=E('div','menu');
+  SPILL.forEach(function(g){
+    var b=E('button','tile '+g.kl);
+    b.appendChild(E('div',null,g.ikon));
+    b.appendChild(E('span',null,g.navn));
+    b.setAttribute('aria-label',g.navn);
+    tap(b,function(){SND.trykk();aapne(g);});
+    m.appendChild(b);
+  });
+  w.appendChild(m);
+  var bytt=E('a','bytt');
+  bytt.href='index.html';
+  bytt.appendChild(E('span',null,'🂡'));
+  bytt.appendChild(E('div',null,'Spillebordet – for voksne'));
+  tap(bytt,function(){SND.trykk();});
+  w.appendChild(bytt);
+  w.appendChild(E('div','menuhint','Seks spill uten reklame.\nVersjon '+VERSJON));
+  app.appendChild(w);
+}
+function aapne(g){
+  tilbakeEl.style.visibility='visible';
+  tittelEl.textContent=g.navn;
+  tom(app);
+  var w=E('div','wrap');
+  w.id=g.id;
+  app.appendChild(w);
+  if(g.id==='far')farger(w);
+  else if(g.id==='form')former(w);
+  else if(g.id==='sud')sudoku(w);
+  else if(g.id==='baer')baer(w);
+  else if(g.id==='tre')trePaaRad(w);
+  else if(g.id==='bob')bobler(w);
+  app.scrollTop=0;
+}
+tap(tilbakeEl,function(){SND.trykk();meny();});
+
+/* ================= FARGESORTERING ================= */
+function farger(w){
+  var LV=[{n:'Lett',f:2,per:3,ekstra:2},{n:'Middels',f:3,per:3,ekstra:2},{n:'Vanskelig',f:4,per:4,ekstra:2}];
+  var lvl=Lag.les('lvl-far',0);
+  var glass=[],valgt=null,per,hist=[];
+
+  w.appendChild(nivaaRad(LV.map(function(l){return l.n;}),function(){return lvl;},function(i){
+    lvl=i;Lag.skriv('lvl-far',i);start();
+  }));
+  w.appendChild(hjelp('🔴','Flytt kulene så hvert glass bare har én farge. Trykk på et glass for å plukke opp den øverste kula, og trykk på et annet glass for å legge den ned. En kule kan bare legges oppå samme farge, eller i et tomt glass.'));
+  var statEl=E('div','stat'); w.appendChild(statEl);
+  var radEl=E('div','glassrad'); w.appendChild(radEl);
+  var kr=E('div','knapprad');
+  var angreKn=mkKn('Angre',function(){
+    if(!hist.length){SND.nei();toast('Ingenting å angre');return;}
+    var h=hist.pop();
+    glass[h.fra].push(glass[h.til].pop());
+    valgt=null; SND.trykk(); tegn();
+  });
+  kr.appendChild(angreKn);
+  kr.appendChild(mkKn('Nytt brett',function(){SND.trykk();start();},true));
+  w.appendChild(kr);
+
+  function start(){
+    var L=LV[lvl]; per=L.per; hist=[];
+    var forsok=0;
+    do{ glass=lagBane(L.f,L.per,L.ekstra); forsok++; }while(ferdig()&&forsok<40);
+    valgt=null;
+    tegn();
+  }
+  function lagBane(antF,perF,ekstra){
+    var g=[];
+    for(var f=0;f<antF;f++){var b=[];for(var i=0;i<perF;i++)b.push(f);g.push(b);}
+    for(var e=0;e<ekstra;e++)g.push([]);
+    for(var n=0;n<300;n++){
+      var fra=Math.floor(Math.random()*g.length), til=Math.floor(Math.random()*g.length);
+      if(fra===til||!g[fra].length||g[til].length>=perF)continue;
+      g[til].push(g[fra].pop());
+    }
+    return g;
+  }
+  function glassOk(b){
+    if(!b.length)return true;
+    if(b.length!==per)return false;
+    for(var i=1;i<b.length;i++)if(b[i]!==b[0])return false;
+    return true;
+  }
+  function ferdig(){ for(var i=0;i<glass.length;i++)if(!glassOk(glass[i]))return false; return true; }
+  function kanLegge(fra,til){
+    if(fra===til)return false;
+    if(!glass[fra].length)return false;
+    if(glass[til].length>=per)return false;
+    if(!glass[til].length)return true;
+    return glass[til][glass[til].length-1]===glass[fra][glass[fra].length-1];
+  }
+  function tegn(){
+    tom(radEl);
+    var hoyde=per*37+14;
+    glass.forEach(function(b,i){
+      var g=E('div','glass'+(valgt===i?' valgt':'')+(b.length&&glassOk(b)?' ok':''));
+      g.style.minHeight=hoyde+'px';
+      g.setAttribute('role','button');
+      b.forEach(function(k,j){
+        var kule=E('div','kule k'+k+(valgt===i&&j===b.length-1?' loft':''));
+        g.appendChild(kule);
+      });
+      tap(g,function(){klikk(i);});
+      radEl.appendChild(g);
+    });
+    var ok=0; glass.forEach(function(b){if(b.length&&glassOk(b))ok++;});
+    statEl.innerHTML='Ferdige glass: <b>'+ok+'</b> av '+LV[lvl].f;
+    angreKn.disabled=!hist.length;
+    angreKn.style.opacity=hist.length?'1':'.45';
+  }
+  function klikk(i){
+    if(valgt===null){
+      if(!glass[i].length){SND.nei();toast('Det glasset er tomt');return;}
+      valgt=i;SND.trykk();tegn();return;
+    }
+    if(valgt===i){valgt=null;SND.trykk();tegn();return;}
+    if(kanLegge(valgt,i)){
+      hist.push({fra:valgt,til:i});
+      glass[i].push(glass[valgt].pop());
+      valgt=null;SND.ok();tegn();
+      if(ferdig()){SND.jubel();toast('Alle glassene er ferdige!',true);setTimeout(start,1600);}
+    }else{
+      SND.nei();
+      toast(glass[i].length>=per?'Det glasset er fullt':'Kula må ligge oppå samme farge');
+      valgt=i;tegn();
+    }
+  }
+  start();
+}
+
+/* ================= FORMER ================= */
+function former(w){
+  var LV=[{n:'Lett',ant:4},{n:'Middels',ant:6},{n:'Vanskelig',ant:9}];
+  var lvl=Lag.les('lvl-form',0);
+  var POOL=[
+    {f:'🔴',n:'den røde sirkelen'},{f:'🟦',n:'det blå kvadratet'},{f:'⭐',n:'stjernen'},
+    {f:'❤️',n:'hjertet'},{f:'🔺',n:'trekanten'},{f:'🟢',n:'den grønne sirkelen'},
+    {f:'🟨',n:'det gule kvadratet'},{f:'🌙',n:'månen'},{f:'☁️',n:'skyen'},
+    {f:'🍎',n:'eplet'},{f:'🐟',n:'fisken'},{f:'🌸',n:'blomsten'}
+  ];
+  var valg=[],maal=null,rett=0,laast=false;
+
+  w.appendChild(nivaaRad(LV.map(function(l){return l.n;}),function(){return lvl;},function(i){
+    lvl=i;Lag.skriv('lvl-form',i);rett=0;runde();
+  }));
+  w.appendChild(hjelp('⭐','Se på formen i ruta øverst. Finn den samme formen nedenfor og trykk på den.'));
+  var maalEl=E('div','maal'); w.appendChild(maalEl);
+  var statEl=E('div','stat'); w.appendChild(statEl);
+  var gridEl=E('div','grid'); w.appendChild(gridEl);
+
+  function runde(){
+    laast=false;
+    var p=POOL.slice(); stokk(p);
+    valg=p.slice(0,LV[lvl].ant);
+    maal=valg[Math.floor(Math.random()*valg.length)];
+    tegn();
+  }
+  function tegn(){
+    tom(maalEl); tom(gridEl);
+    maalEl.appendChild(E('div','stor',maal.f));
+    maalEl.appendChild(E('div','tx','Finn '+maal.n));
+    gridEl.style.gridTemplateColumns='repeat('+(LV[lvl].ant<=4?2:3)+',1fr)';
+    valg.forEach(function(v){
+      var r=E('div','rute',v.f);
+      r.setAttribute('role','button');
+      r.setAttribute('aria-label',v.n);
+      tap(r,function(){
+        if(laast)return;
+        if(v.f===maal.f){
+          laast=true; rett++;
+          r.classList.add('rett'); SND.ok();
+          statEl.innerHTML='Riktig: <b>'+rett+'</b>';
+          if(rett%5===0){SND.jubel();toast('Fem riktige på rad!',true);}
+          setTimeout(runde,700);
+        }else{
+          r.classList.add('feil'); SND.nei();
+          toast('Prøv en gang til');
+          setTimeout(function(){r.classList.remove('feil');},350);
+        }
+      });
+      gridEl.appendChild(r);
+    });
+    statEl.innerHTML='Riktig: <b>'+rett+'</b>';
+  }
+  runde();
+}
+
+/* ================= SUDOKU 4x4 ================= */
+function sudoku(w){
+  var LV=[{n:'Lett',fjern:5},{n:'Middels',fjern:8},{n:'Vanskelig',fjern:10}];
+  var lvl=Lag.les('lvl-sud',0);
+  var gitt=[],naa=[],fasit=[],valgt=-1,feilPaa=-1;
+
+  w.appendChild(nivaaRad(LV.map(function(l){return l.n;}),function(){return lvl;},function(i){
+    lvl=i;Lag.skriv('lvl-sud',i);start();
+  }));
+  w.appendChild(hjelp('🔢','Fyll inn tallene 1, 2, 3 og 4. Hvert tall skal være med bare én gang i hver rad, i hver kolonne og i hver av de fire små firkantene. Trykk på en tom rute, og velg så et tall.'));
+  var statEl=E('div','stat'); w.appendChild(statEl);
+  var brettEl=E('div','brett'); w.appendChild(brettEl);
+  var tallEl=E('div','tallrad'); w.appendChild(tallEl);
+  var kr=E('div','knapprad');
+  kr.appendChild(mkKn('Ny oppgave',function(){SND.trykk();start();},true));
+  w.appendChild(kr);
+
+  function lagFull(){
+    var g=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    function ok(r,c,n){
+      for(var i=0;i<4;i++){if(g[r*4+i]===n)return false;if(g[i*4+c]===n)return false;}
+      var br=Math.floor(r/2)*2,bc=Math.floor(c/2)*2;
+      for(var i=br;i<br+2;i++)for(var j=bc;j<bc+2;j++)if(g[i*4+j]===n)return false;
+      return true;
+    }
+    function fyll(p){
+      if(p===16)return true;
+      var r=Math.floor(p/4),c=p%4,t=stokk([1,2,3,4]);
+      for(var i=0;i<4;i++){ if(ok(r,c,t[i])){g[p]=t[i];if(fyll(p+1))return true;g[p]=0;} }
+      return false;
+    }
+    fyll(0); return g;
+  }
+  function antLos(g){
+    var t=-1; for(var i=0;i<16;i++)if(g[i]===0){t=i;break;}
+    if(t<0)return 1;
+    var r=Math.floor(t/4),c=t%4,sum=0;
+    for(var n=1;n<=4;n++){
+      var gy=true;
+      for(var i=0;i<4;i++)if(g[r*4+i]===n||g[i*4+c]===n){gy=false;break;}
+      if(gy){var br=Math.floor(r/2)*2,bc=Math.floor(c/2)*2;
+        for(var i=br;i<br+2&&gy;i++)for(var j=bc;j<bc+2;j++)if(g[i*4+j]===n){gy=false;break;}}
+      if(gy){g[t]=n;sum+=antLos(g);g[t]=0;if(sum>1)return sum;}
+    }
+    return sum;
+  }
+  function start(){
+    fasit=lagFull();
+    var opp=fasit.slice();
+    var pos=stokk([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+    var f=0;
+    for(var k=0;k<16&&f<LV[lvl].fjern;k++){
+      var p=pos[k],bak=opp[p]; opp[p]=0;
+      if(antLos(opp.slice())!==1)opp[p]=bak; else f++;
+    }
+    gitt=opp.slice(); naa=opp.slice(); valgt=-1;
+    tegn();
+  }
+  function tegn(){
+    tom(brettEl);
+    for(var i=0;i<16;i++)(function(i){
+      var r=Math.floor(i/4),c=i%4;
+      var kl='celle';
+      if(c===1)kl+=' b1';
+      if(r===1)kl+=' b2';
+      if(gitt[i])kl+=' gitt';
+      else{ kl+=' min'; if(valgt===i)kl+=' valgt'; if(feilPaa===i)kl+=' feil'; }
+      var e=E(gitt[i]?'div':'button',kl,naa[i]?String(naa[i]):'');
+      if(!gitt[i]){
+        tap(e,function(){ SND.trykk(); valgt=(valgt===i?-1:i); tegn(); });
+      }
+      brettEl.appendChild(e);
+    })(i);
+    tom(tallEl);
+    var brukt=[0,0,0,0,0];
+    for(var i=0;i<16;i++) if(naa[i])brukt[naa[i]]++;
+    for(var n=1;n<=4;n++)(function(n){
+      var igjen=4-brukt[n], ferdig=igjen<=0;
+      var b=E('button','tk'+(ferdig?' oppbrukt':''),String(n));
+      if(!ferdig)b.setAttribute('data-igjen',igjen);
+      b.disabled=ferdig;
+      b.setAttribute('aria-label',ferdig?(n+', alle er plassert'):(n+', '+igjen+' igjen'));
+      tap(b,function(){
+        if(valgt<0){SND.nei();toast('Trykk først på en tom rute');return;}
+        if(n===fasit[valgt]){
+          naa[valgt]=n; SND.ok(); valgt=-1; tegn(); sjekk();
+        }else{
+          SND.nei(); toast('Prøv et annet tall');
+          feilPaa=valgt; tegn();
+          setTimeout(function(){feilPaa=-1;tegn();},380);
+        }
+      });
+      tallEl.appendChild(b);
+    })(n);
+    var v=E('button','tk visk','✕');
+    tap(v,function(){
+      if(valgt<0){SND.nei();toast('Trykk først på en rute');return;}
+      naa[valgt]=0;SND.trykk();valgt=-1;tegn();
+    });
+    tallEl.appendChild(v);
+    var igjen=0; for(var i=0;i<16;i++)if(!naa[i])igjen++;
+    statEl.innerHTML='Ruter igjen: <b>'+igjen+'</b>';
+  }
+  function sjekk(){
+    for(var i=0;i<16;i++)if(naa[i]!==fasit[i])return;
+    SND.jubel(); toast('Sudokuen er ferdig!',true);
+    setTimeout(start,1800);
+  }
+  start();
+}
+
+/* ================= BÆRPLUKK (match-3) ================= */
+function baer(w){
+  var LV=[{n:'Lett',C:5,R:5,s:3,maal:15},{n:'Middels',C:6,R:6,s:4,maal:25},{n:'Vanskelig',C:7,R:7,s:5,maal:40}];
+  var BAER=['🍓','🫐','🍇','🍒','🍑'];
+  var lvl=Lag.les('lvl-baer',0);
+  var C,R,sorter,rute=[],valgt=-1,plukket=0,laast=false;
+
+  w.appendChild(nivaaRad(LV.map(function(l){return l.n;}),function(){return lvl;},function(i){
+    lvl=i;Lag.skriv('lvl-baer',i);start();
+  }));
+  w.appendChild(hjelp('🍓','Bytt om to bær som ligger ved siden av hverandre, slik at tre eller flere like havner på rad. Da forsvinner de, og nye bær faller ned ovenfra. Ingen tid og ingen grense — plukk i ditt eget tempo.'));
+  var statEl=E('div','stat'); w.appendChild(statEl);
+  var brettEl=E('div','brett'); w.appendChild(brettEl);
+  var kr=E('div','knapprad');
+  kr.appendChild(mkKn('Nytt brett',function(){SND.trykk();start();},true));
+  w.appendChild(kr);
+
+  function treff(){
+    var t={};
+    for(var r=0;r<R;r++){var run=1;
+      for(var c=1;c<=C;c++){
+        if(c<C&&rute[r*C+c]===rute[r*C+c-1])run++;
+        else{if(run>=3)for(var k=c-run;k<c;k++)t[r*C+k]=1;run=1;}
+      }}
+    for(var c=0;c<C;c++){var run=1;
+      for(var r=1;r<=R;r++){
+        if(r<R&&rute[r*C+c]===rute[(r-1)*C+c])run++;
+        else{if(run>=3)for(var k=r-run;k<r;k++)t[k*C+c]=1;run=1;}
+      }}
+    return Object.keys(t).map(Number);
+  }
+  function harTrekk(){
+    for(var r=0;r<R;r++)for(var c=0;c<C;c++){
+      if(c<C-1){var a=r*C+c,b=r*C+c+1,t=rute[a];rute[a]=rute[b];rute[b]=t;
+        var ok=treff().length>0; t=rute[a];rute[a]=rute[b];rute[b]=t; if(ok)return true;}
+      if(r<R-1){var a2=r*C+c,b2=(r+1)*C+c,t2=rute[a2];rute[a2]=rute[b2];rute[b2]=t2;
+        var ok2=treff().length>0; t2=rute[a2];rute[a2]=rute[b2];rute[b2]=t2; if(ok2)return true;}
+    }
+    return false;
+  }
+  function start(){
+    var L=LV[lvl]; C=L.C; R=L.R; sorter=BAER.slice(0,L.s);
+    plukket=0; valgt=-1; laast=false;
+    nyttBrett();
+    brettEl.style.gridTemplateColumns='repeat('+C+',1fr)';
+    tegn();
+  }
+  function nyttBrett(){
+    var f=0;
+    do{ rute=[]; for(var i=0;i<C*R;i++)rute.push(sorter[Math.floor(Math.random()*sorter.length)]); f++; }
+    while((treff().length>0||!harTrekk())&&f<400);
+  }
+  function tegn(){
+    tom(brettEl);
+    rute.forEach(function(b,i){
+      var e=E('div','bt'+(valgt===i?' valgt':''),b);
+      e.setAttribute('role','button');
+      tap(e,function(){klikk(i);});
+      brettEl.appendChild(e);
+    });
+    statEl.innerHTML='Plukket: <b>'+plukket+'</b> av '+LV[lvl].maal;
+  }
+  function nabo(a,b){
+    var ra=Math.floor(a/C),ca=a%C,rb=Math.floor(b/C),cb=b%C;
+    return Math.abs(ra-rb)+Math.abs(ca-cb)===1;
+  }
+  function klikk(i){
+    if(laast)return;
+    if(valgt<0){valgt=i;SND.trykk();tegn();return;}
+    if(valgt===i){valgt=-1;SND.trykk();tegn();return;}
+    if(!nabo(valgt,i)){SND.nei();toast('Velg et bær som ligger inntil');valgt=i;tegn();return;}
+    var a=valgt,b=i,t=rute[a];rute[a]=rute[b];rute[b]=t;
+    if(treff().length===0){
+      t=rute[a];rute[a]=rute[b];rute[b]=t;
+      SND.nei();toast('Det gir ingen rad på tre');valgt=-1;tegn();return;
+    }
+    valgt=-1;laast=true;SND.ok();tegn();
+    setTimeout(kjedereaksjon,200);
+  }
+  function kjedereaksjon(){
+    var t=treff();
+    if(!t.length){
+      laast=false;
+      if(!harTrekk()){toast('Ingen trekk igjen — nytt brett');nyttBrett();tegn();}
+      if(plukket>=LV[lvl].maal){laast=true;SND.jubel();toast('Du klarte det!',true);setTimeout(start,1800);}
+      return;
+    }
+    plukket+=t.length;
+    var celler=brettEl.children;
+    t.forEach(function(i){ if(celler[i])celler[i].classList.add('borte'); });
+    SND.pling();
+    setTimeout(function(){
+      t.forEach(function(i){rute[i]=null;});
+      for(var c=0;c<C;c++){
+        var stabel=[];
+        for(var r=R-1;r>=0;r--)if(rute[r*C+c]!==null)stabel.push(rute[r*C+c]);
+        for(var r=R-1,k=0;r>=0;r--,k++)
+          rute[r*C+c]= k<stabel.length?stabel[k]:sorter[Math.floor(Math.random()*sorter.length)];
+      }
+      tegn();
+      setTimeout(kjedereaksjon,180);
+    },240);
+  }
+  start();
+}
+
+/* ================= TRE PÅ RAD ================= */
+function trePaaRad(w){
+  var LV=[{n:'Lett'},{n:'Middels'},{n:'Vanskelig'}];
+  var lvl=Lag.les('lvl-tre',0);
+  var LINJER=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  var b,laast,minPoeng=Lag.les('tre-meg',0),dinPoeng=Lag.les('tre-tlf',0),like=Lag.les('tre-like',0);
+
+  w.appendChild(nivaaRad(LV.map(function(l){return l.n;}),function(){return lvl;},function(i){
+    lvl=i;Lag.skriv('lvl-tre',i);start();
+  }));
+  w.appendChild(hjelp('❌','Du er ❌ og telefonen er ⭕. Trykk på en tom rute. Den som først får tre på rad — bortover, nedover eller på skrå — vinner.'));
+  var poengEl=E('div','poeng'); w.appendChild(poengEl);
+  var statEl=E('div','stat'); w.appendChild(statEl);
+  var brettEl=E('div','brett'); w.appendChild(brettEl);
+  var kr=E('div','knapprad');
+  kr.appendChild(mkKn('Nytt spill',function(){SND.trykk();start();},true));
+  kr.appendChild(mkKn('Nullstill poeng',function(){
+    SND.trykk();minPoeng=0;dinPoeng=0;like=0;
+    Lag.skriv('tre-meg',0);Lag.skriv('tre-tlf',0);Lag.skriv('tre-like',0);tegn();
+  }));
+  w.appendChild(kr);
+
+  function vinner(br){
+    for(var i=0;i<LINJER.length;i++){var L=LINJER[i];
+      if(br[L[0]]&&br[L[0]]===br[L[1]]&&br[L[1]]===br[L[2]])return {s:br[L[0]],L:L};}
+    return null;
+  }
+  function ledige(br){var a=[];for(var i=0;i<9;i++)if(!br[i])a.push(i);return a;}
+  function minimax(br,tur){
+    var v=vinner(br);
+    if(v)return {sc:v.s==='O'?1:-1};
+    var l=ledige(br);
+    if(!l.length)return {sc:0};
+    var best=null;
+    for(var i=0;i<l.length;i++){
+      br[l[i]]=tur;
+      var r=minimax(br,tur==='O'?'X':'O');
+      br[l[i]]=null;
+      if(tur==='O'){if(!best||r.sc>best.sc)best={sc:r.sc,t:l[i]};}
+      else{if(!best||r.sc<best.sc)best={sc:r.sc,t:l[i]};}
+    }
+    return best;
+  }
+  function tlfTrekk(){
+    var l=ledige(b);
+    if(!l.length)return -1;
+    if(lvl===0)return l[Math.floor(Math.random()*l.length)];
+    if(lvl===1){
+      for(var i=0;i<l.length;i++){b[l[i]]='O';var v=vinner(b);b[l[i]]=null;if(v)return l[i];}
+      for(var i=0;i<l.length;i++){b[l[i]]='X';var v2=vinner(b);b[l[i]]=null;if(v2)return l[i];}
+      return l[Math.floor(Math.random()*l.length)];
+    }
+    return minimax(b.slice(),'O').t;
+  }
+  function start(){
+    b=[null,null,null,null,null,null,null,null,null];
+    laast=false; tegn(); statEl.textContent='Din tur';
+  }
+  function tegn(seierLinje){
+    tom(brettEl);
+    for(var i=0;i<9;i++)(function(i){
+      var kl='rute'+(b[i]==='X'?' x':b[i]==='O'?' o':'');
+      if(seierLinje&&seierLinje.indexOf(i)>=0)kl+=' seier';
+      var e=E('div',kl,b[i]==='X'?'✕':b[i]==='O'?'◯':'');
+      e.setAttribute('role','button');
+      tap(e,function(){klikk(i);});
+      brettEl.appendChild(e);
+    })(i);
+    tom(poengEl);
+    poengEl.appendChild(E('div',null,'Du: '+minPoeng));
+    poengEl.appendChild(E('div',null,'Uavgjort: '+like));
+    poengEl.appendChild(E('div',null,'Telefonen: '+dinPoeng));
+  }
+  function klikk(i){
+    if(laast||b[i])
+      { if(b[i]){SND.nei();toast('Den ruta er opptatt');} return; }
+    b[i]='X'; SND.trykk();
+    var v=vinner(b);
+    if(v){ slutt(v); return; }
+    if(!ledige(b).length){ slutt(null); return; }
+    laast=true; tegn(); statEl.textContent='Telefonen tenker …';
+    setTimeout(function(){
+      var t=tlfTrekk();
+      if(t>=0)b[t]='O';
+      SND.pling();
+      var v2=vinner(b);
+      if(v2){ slutt(v2); return; }
+      if(!ledige(b).length){ slutt(null); return; }
+      laast=false; tegn(); statEl.textContent='Din tur';
+    },520);
+  }
+  function slutt(v){
+    laast=true;
+    if(!v){ like++; Lag.skriv('tre-like',like); tegn(); statEl.textContent='Uavgjort'; SND.pling(); toast('Uavgjort'); }
+    else if(v.s==='X'){ minPoeng++; Lag.skriv('tre-meg',minPoeng); tegn(v.L); statEl.textContent='Du vant!'; SND.jubel(); toast('Du vant!',true); }
+    else { dinPoeng++; Lag.skriv('tre-tlf',dinPoeng); tegn(v.L); statEl.textContent='Telefonen vant'; SND.nei(); toast('Telefonen vant denne gangen'); }
+    setTimeout(start,2200);
+  }
+  start();
+}
+
+/* ================= BOBLESKYTER ================= */
+function bobler(w){
+  var BAER=[
+    {tegn:'\uD83C\uDF53',farge:'#E8453C'},{tegn:'\uD83E\uDED0',farge:'#4A72D6'},
+    {tegn:'\uD83C\uDF47',farge:'#8E5BD0'},{tegn:'\uD83C\uDF52',farge:'#C22A4E'},
+    {tegn:'\uD83E\uDD5D',farge:'#6AA84F'},{tegn:'\uD83C\uDF4A',farge:'#E08B28'}
+  ];
+  var NIVAER=[
+    {rader:3,typer:3,monster:'full',skudd:30},   {rader:3,typer:3,monster:'sjakk',skudd:30},
+    {rader:4,typer:3,monster:'full',skudd:32},   {rader:4,typer:4,monster:'pyramide',skudd:32},
+    {rader:4,typer:4,monster:'sjakk',skudd:32},  {rader:5,typer:4,monster:'full',skudd:34},
+    {rader:5,typer:4,monster:'striper',skudd:34},{rader:5,typer:4,monster:'diamant',skudd:34},
+    {rader:5,typer:5,monster:'sjakk',skudd:34},  {rader:6,typer:4,monster:'full',skudd:36},
+    {rader:6,typer:5,monster:'hull',skudd:36},   {rader:6,typer:5,monster:'striper',skudd:36},
+    {rader:6,typer:5,monster:'pyramide',skudd:36},{rader:7,typer:5,monster:'full',skudd:38},
+    {rader:7,typer:5,monster:'diamant',skudd:38},{rader:7,typer:6,monster:'hull',skudd:38},
+    {rader:7,typer:6,monster:'sjakk',skudd:38},  {rader:8,typer:6,monster:'striper',skudd:40},
+    {rader:8,typer:6,monster:'pyramide',skudd:40},{rader:9,typer:6,monster:'full',skudd:42}
+  ];
+  var KOL=9, MAKS_RAD=12, FARE_RAD=11;
+  var stjerner=Lag.les('bob-stj',{});
+
+  var nivaaEl=E('div'), spillEl=E('div');
+  w.appendChild(nivaaEl); w.appendChild(spillEl);
+
+  var lerret=null, ctx=null, W=0,H=0,R=0,RAD_H=0,dpr=1;
+  var nivaa=0, rutenett=[], typerIBruk=3, skuddIgjen=0, skuddTotalt=0;
+  var gjeldende=0, neste=0, skudd=null, fallende=[], gnister=[];
+  var vinkel=-Math.PI/2, sikter=false, aktiv=false, gaar=false;
+  var statEl=null, nesteEl=null;
+
+  function kolIRad(r){ return (r%2===0)?KOL:KOL-1; }
+  function pos(r,c){ return {x:R+c*2*R+((r%2)?R:0), y:R+r*RAD_H}; }
+  function naboer(r,c){
+    var skjev=r%2, ut=[];
+    var k=[[r,c-1],[r,c+1],[r-1,c-1+skjev],[r-1,c+skjev],[r+1,c-1+skjev],[r+1,c+skjev]];
+    for(var i=0;i<k.length;i++){
+      var rr=k[i][0], cc=k[i][1];
+      if(rr>=0&&rr<MAKS_RAD&&cc>=0&&cc<kolIRad(rr))ut.push([rr,cc]);
+    }
+    return ut;
+  }
+  function antallBaer(){
+    var n=0;
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++)if(rutenett[r][c]!==null)n++;
+    return n;
+  }
+
+  /* ---------- nivåliste ---------- */
+  function visNivaaListe(){
+    aktiv=false; gaar=false;
+    tom(spillEl); tom(nivaaEl);
+    nivaaEl.appendChild(hjelp('\uD83C\uDF53','Sikt med fingeren og slipp for å skyte. Treffer du tre eller flere like, faller de ned. Bær som mister feste faller også. Tøm brettet før skuddene er slutt.'));
+    var g=E('div','nivaagrid');
+    NIVAER.forEach(function(cfg,i){
+      var stj=stjerner[i]||0;
+      var b=E('button','nv'+(stj?' klart':''));
+      b.appendChild(E('div',null,String(i+1)));
+      var sd=E('div','stj'); sd.textContent=stj?Array(stj+1).join('\u2605'):'';
+      b.appendChild(sd);
+      b.setAttribute('aria-label','Nivå '+(i+1)+(stj?', '+stj+' stjerner':''));
+      tap(b,function(){SND.trykk();startNivaa(i);});
+      g.appendChild(b);
+    });
+    nivaaEl.appendChild(g);
+  }
+
+  /* ---------- spillskjerm ---------- */
+  function byggSpill(){
+    tom(nivaaEl); tom(spillEl);
+    statEl=E('div','stat'); spillEl.appendChild(statEl);
+    lerret=document.createElement('canvas'); spillEl.appendChild(lerret);
+    ctx=lerret.getContext('2d');
+    var bunn=E('div','bunn');
+    nesteEl=E('button','neste');
+    tap(nesteEl,function(){
+      if(!aktiv||skudd)return;
+      var t=gjeldende; gjeldende=neste; neste=t;
+      SND.trykk(); oppdater();
+    });
+    bunn.appendChild(nesteEl);
+    bunn.appendChild(mkKn('Start på nytt',function(){SND.trykk();startNivaa(nivaa);}));
+    bunn.appendChild(mkKn('Alle nivåer',function(){SND.trykk();visNivaaListe();}));
+    spillEl.appendChild(bunn);
+    knyttStyring();
+  }
+  function maalStorrelse(){
+    var bredde=Math.min(spillEl.clientWidth||340,400);
+    if(bredde<60)bredde=340;
+    R=bredde/(KOL*2); RAD_H=R*Math.sqrt(3);
+    W=bredde; H=Math.round(RAD_H*(FARE_RAD+0.5)+R*4);
+    dpr=Math.min(window.devicePixelRatio||1,3);
+    lerret.width=Math.round(W*dpr); lerret.height=Math.round(H*dpr);
+    lerret.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function monsterTreff(m,r,c,rader,bredde){
+    var midt=(bredde-1)/2;
+    if(m==='sjakk')return (r+c)%2===0;
+    if(m==='pyramide')return Math.abs(c-midt)<=r+0.6;
+    if(m==='diamant')return Math.abs(c-midt)<=Math.min(r,rader-1-r)+1.2;
+    if(m==='striper')return r%2===0||c%2===0;
+    if(m==='hull')return Math.random()>0.26;
+    return true;
+  }
+  function trekkType(){
+    var f={};
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++)
+      if(rutenett[r][c]!==null)f[rutenett[r][c]]=1;
+    var liste=Object.keys(f).map(Number);
+    if(!liste.length){ liste=[]; for(var i=0;i<typerIBruk;i++)liste.push(i); }
+    return liste[Math.floor(Math.random()*liste.length)];
+  }
+  function startNivaa(n){
+    nivaa=n;
+    byggSpill(); maalStorrelse();
+    var cfg=NIVAER[n];
+    typerIBruk=cfg.typer; skuddTotalt=skuddIgjen=cfg.skudd;
+    rutenett=[];
+    for(var r=0;r<MAKS_RAD;r++){
+      var rad=[]; for(var c=0;c<kolIRad(r);c++)rad.push(null);
+      rutenett.push(rad);
+    }
+    for(var r=0;r<cfg.rader;r++){
+      var bredde=kolIRad(r);
+      for(var c=0;c<bredde;c++){
+        if(!monsterTreff(cfg.monster,r,c,cfg.rader,bredde))continue;
+        rutenett[r][c]=Math.floor(Math.random()*typerIBruk);
+      }
+    }
+    if(antallBaer()===0)
+      for(var c=0;c<KOL;c++)rutenett[0][c]=Math.floor(Math.random()*typerIBruk);
+    skudd=null; fallende=[]; gnister=[];
+    gjeldende=trekkType(); neste=trekkType();
+    aktiv=true;
+    oppdater();
+    if(!gaar){ gaar=true; requestAnimationFrame(lokke); }
+  }
+  function oppdater(){
+    statEl.innerHTML='Nivå <b>'+(nivaa+1)+'</b> \u00B7 Skudd igjen: <b>'+skuddIgjen+'</b> \u00B7 Bær igjen: <b>'+antallBaer()+'</b>';
+    tom(nesteEl);
+    nesteEl.appendChild(E('span',null,'Neste'));
+    nesteEl.appendChild(E('b',null,BAER[neste].tegn));
+    nesteEl.appendChild(E('span',null,'\u21C4'));
+  }
+
+  /* ---------- skyting ---------- */
+  function skyt(){
+    if(!aktiv||skudd||skuddIgjen<=0)return;
+    var v=Math.max(-Math.PI+0.28,Math.min(-0.28,vinkel));
+    skudd={x:W/2,y:H-R*1.6,dx:Math.cos(v),dy:Math.sin(v),type:gjeldende};
+    skuddIgjen--;
+    gjeldende=neste; neste=trekkType();
+    SND.trykk(); oppdater();
+  }
+  function flyttSkudd(){
+    if(!skudd)return;
+    var igjen=R*0.9, steg=R*0.3;
+    while(igjen>0&&skudd){
+      var d=Math.min(steg,igjen); igjen-=d;
+      skudd.x+=skudd.dx*d; skudd.y+=skudd.dy*d;
+      if(skudd.x<R){skudd.x=R;skudd.dx*=-1;}
+      if(skudd.x>W-R){skudd.x=W-R;skudd.dx*=-1;}
+      if(skudd.y<=R||treffer()){ fest(); return; }
+    }
+  }
+  function treffer(){
+    var grense=(R*1.85)*(R*1.85);
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++){
+      if(rutenett[r][c]===null)continue;
+      var p=pos(r,c), ax=p.x-skudd.x, ay=p.y-skudd.y;
+      if(ax*ax+ay*ay<grense)return true;
+    }
+    return false;
+  }
+  function fest(){
+    var best=null,bestD=Infinity;
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++){
+      if(rutenett[r][c]!==null)continue;
+      if(r>0){
+        var har=false;
+        naboer(r,c).forEach(function(n){ if(rutenett[n[0]][n[1]]!==null)har=true; });
+        if(!har)continue;
+      }
+      var p=pos(r,c), ax=p.x-skudd.x, ay=p.y-skudd.y, dd=ax*ax+ay*ay;
+      if(dd<bestD){bestD=dd;best={r:r,c:c};}
+    }
+    var type=skudd.type; skudd=null;
+    if(!best){ sjekkSlutt(0); oppdater(); return; }
+    rutenett[best.r][best.c]=type;
+    var kl=finnKlynge(best.r,best.c,type);
+    if(kl.length>=3){
+      kl.forEach(function(n){ lagGnister(pos(n[0],n[1]),type); rutenett[n[0]][n[1]]=null; });
+      SND.pling();
+      slippLosne();
+    }
+    sjekkSlutt(best.r);
+    oppdater();
+  }
+  function finnKlynge(r0,c0,type){
+    var sett={}, ko=[[r0,c0]], ut=[[r0,c0]];
+    sett[r0+','+c0]=1;
+    while(ko.length){
+      var p=ko.pop();
+      naboer(p[0],p[1]).forEach(function(n){
+        var k=n[0]+','+n[1];
+        if(sett[k]||rutenett[n[0]][n[1]]!==type)return;
+        sett[k]=1; ko.push(n); ut.push(n);
+      });
+    }
+    return ut;
+  }
+  function slippLosne(){
+    var festet={}, ko=[];
+    for(var c=0;c<kolIRad(0);c++)
+      if(rutenett[0][c]!==null){ festet['0,'+c]=1; ko.push([0,c]); }
+    while(ko.length){
+      var p=ko.pop();
+      naboer(p[0],p[1]).forEach(function(n){
+        var k=n[0]+','+n[1];
+        if(festet[k]||rutenett[n[0]][n[1]]===null)return;
+        festet[k]=1; ko.push(n);
+      });
+    }
+    var falt=0;
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++){
+      if(rutenett[r][c]===null||festet[r+','+c])continue;
+      var p=pos(r,c);
+      fallende.push({x:p.x,y:p.y,vy:-1-Math.random()*1.5,vx:(Math.random()-.5)*2.4,type:rutenett[r][c]});
+      rutenett[r][c]=null; falt++;
+    }
+    if(falt)SND.ok();
+  }
+  function lagGnister(p,type){
+    for(var i=0;i<7;i++){
+      var a=Math.random()*Math.PI*2, f=1.5+Math.random()*3;
+      gnister.push({x:p.x,y:p.y,vx:Math.cos(a)*f,vy:Math.sin(a)*f,liv:1,farge:BAER[type].farge});
+    }
+  }
+  function sjekkSlutt(sisteRad){
+    if(antallBaer()===0){ vunnet(); return; }
+    if(sisteRad>=FARE_RAD){ tapt('Bærene nådde bunnen.'); return; }
+    if(skuddIgjen<=0){ tapt('Tom for skudd.'); }
+  }
+  function vunnet(){
+    aktiv=false;
+    var andel=skuddIgjen/skuddTotalt;
+    var stj=andel>=.45?3:(andel>=.2?2:1);
+    stjerner[nivaa]=Math.max(stjerner[nivaa]||0,stj);
+    Lag.skriv('bob-stj',stjerner);
+    SND.jubel();
+    visSlutt(stj,'Bra jobba!','Nivå '+(nivaa+1)+' er tømt med '+skuddIgjen+' skudd til overs.',
+      nivaa<NIVAER.length-1?'Neste nivå':'Spill igjen',
+      function(){ startNivaa(nivaa<NIVAER.length-1?nivaa+1:nivaa); });
+  }
+  function tapt(grunn){
+    aktiv=false; SND.nei();
+    visSlutt(0,'Prøv igjen',grunn+' Ingen stress \u2014 brettet stokkes på nytt.',
+      'Prøv igjen', function(){ startNivaa(nivaa); });
+  }
+  function visSlutt(stj,tittel,tekst,knapp,handling){
+    var gml=spillEl.querySelector('.slutt'); if(gml)spillEl.removeChild(gml);
+    var d=E('div','slutt');
+    if(stj){
+      var sd=E('div','stj');
+      sd.textContent=Array(stj+1).join('\u2605')+Array(4-stj).join('\u2606');
+      d.appendChild(sd);
+    }
+    d.appendChild(E('h3',null,tittel));
+    d.appendChild(E('p',null,tekst));
+    var kr=E('div','knapprad');
+    kr.appendChild(mkKn(knapp,function(){SND.trykk();handling();},true));
+    kr.appendChild(mkKn('Alle nivåer',function(){SND.trykk();visNivaaListe();}));
+    d.appendChild(kr);
+    spillEl.appendChild(d);
+  }
+
+  /* ---------- tegning ---------- */
+  function tegnBaer(x,y,type,skala,alfa){
+    skala=skala||1; alfa=(alfa==null)?1:alfa;
+    var b=BAER[type];
+    ctx.save();
+    ctx.globalAlpha=alfa;
+    ctx.beginPath(); ctx.arc(x,y,R*0.94*skala,0,Math.PI*2);
+    ctx.fillStyle=b.farge+'2E'; ctx.fill();
+    ctx.lineWidth=Math.max(1,R*0.09); ctx.strokeStyle=b.farge+'BB'; ctx.stroke();
+    ctx.font=Math.round(R*1.25*skala)+'px "Apple Color Emoji","Segoe UI Emoji",serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(b.tegn,x,y+R*0.06);
+    ctx.restore();
+  }
+  function tegn(){
+    ctx.clearRect(0,0,W,H);
+    var fy=pos(FARE_RAD,0).y-R*0.4;
+    ctx.save();
+    ctx.setLineDash([R*0.4,R*0.4]);
+    ctx.strokeStyle='rgba(255,107,107,.45)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,fy); ctx.lineTo(W,fy); ctx.stroke();
+    ctx.restore();
+    for(var r=0;r<MAKS_RAD;r++)for(var c=0;c<kolIRad(r);c++)
+      if(rutenett[r][c]!==null){ var p=pos(r,c); tegnBaer(p.x,p.y,rutenett[r][c]); }
+    fallende.forEach(function(f){
+      tegnBaer(f.x,f.y,f.type,1,Math.max(0,Math.min(1,(H+40-f.y)/120)));
+    });
+    gnister.forEach(function(g){
+      ctx.globalAlpha=Math.max(0,g.liv);
+      ctx.fillStyle=g.farge;
+      ctx.beginPath(); ctx.arc(g.x,g.y,R*0.18*g.liv,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=1;
+    });
+    var kx=W/2, ky=H-R*1.6;
+    if(aktiv&&!skudd){
+      var v=Math.max(-Math.PI+0.28,Math.min(-0.28,vinkel));
+      ctx.save();
+      ctx.setLineDash([R*0.35,R*0.55]);
+      ctx.strokeStyle='rgba(90,70,54,.4)';
+      ctx.lineWidth=Math.max(2,R*0.14); ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(kx,ky);
+      ctx.lineTo(kx+Math.cos(v)*R*7,ky+Math.sin(v)*R*7);
+      ctx.stroke(); ctx.restore();
+    }
+    ctx.fillStyle='rgba(90,70,54,.07)';
+    ctx.beginPath(); ctx.arc(kx,ky,R*1.5,0,Math.PI*2); ctx.fill();
+    if(aktiv&&!skudd)tegnBaer(kx,ky,gjeldende);
+    if(skudd)tegnBaer(skudd.x,skudd.y,skudd.type);
+  }
+  function lokke(){
+    if(!lerret||!lerret.parentNode){ gaar=false; return; }   // spillet er forlatt
+    if(skudd)flyttSkudd();
+    for(var i=fallende.length-1;i>=0;i--){
+      var f=fallende[i];
+      f.vy+=0.45; f.y+=f.vy; f.x+=f.vx;
+      if(f.y>H+R*2)fallende.splice(i,1);
+    }
+    for(var i=gnister.length-1;i>=0;i--){
+      var g=gnister[i];
+      g.x+=g.vx; g.y+=g.vy; g.vy+=0.22; g.liv-=0.045;
+      if(g.liv<=0)gnister.splice(i,1);
+    }
+    tegn();
+    requestAnimationFrame(lokke);
+  }
+
+  /* ---------- styring ---------- */
+  function sikt(ev){
+    var rekt=lerret.getBoundingClientRect();
+    var px=(ev.clientX!=null)?ev.clientX:(ev.touches&&ev.touches[0].clientX);
+    var py=(ev.clientY!=null)?ev.clientY:(ev.touches&&ev.touches[0].clientY);
+    var x=(px-rekt.left)*(W/rekt.width);
+    var y=(py-rekt.top)*(H/rekt.height);
+    var dx=x-W/2, dy=y-(H-R*1.6);
+    vinkel=Math.atan2(Math.min(dy,-R*0.6),dx);
+  }
+  function knyttStyring(){
+    lerret.addEventListener('pointerdown',function(e){
+      if(!aktiv||skudd)return;
+      sikter=true; sikt(e);
+      try{lerret.setPointerCapture(e.pointerId);}catch(err){}
+    });
+    lerret.addEventListener('pointermove',function(e){ if(sikter)sikt(e); });
+    lerret.addEventListener('pointerup',function(e){
+      if(!sikter)return; sikter=false; sikt(e); skyt();
+    });
+    lerret.addEventListener('pointercancel',function(){ sikter=false; });
+    lerret.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+  }
+  window.addEventListener('resize',function(){
+    if(lerret&&lerret.parentNode){ maalStorrelse(); skudd=null; }
+  });
+
+  visNivaaListe();
+}
+
+/* ---------- FELLES KNAPP ---------- */
+function mkKn(tekst,fn,pri){
+  var b=E('button','kn'+(pri?' pri':''),tekst);
+  tap(b,fn);
+  return b;
+}
+
+meny();
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
