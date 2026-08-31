@@ -46,6 +46,7 @@ body{
 .t4{background:linear-gradient(135deg,#A78BFA,#8B5CF6)}
 .t5{background:linear-gradient(135deg,#63B3ED,#4299E1)}
 .t6{background:linear-gradient(135deg,#F58BB8,#E8639B)}
+.t7{background:linear-gradient(135deg,#5FBF77,#3A9D5D)}
 .menuhint{margin-top:18px;font-size:13px;color:#8A7A66;text-align:center;line-height:1.5}
 
 /* NIVÅ-KNAPPER */
@@ -163,6 +164,26 @@ body{
 #bob .slutt h3{font-size:21px;margin-bottom:6px;color:#3A2E22}
 #bob .slutt p{font-size:15px;color:#8A7A66;margin-bottom:14px;line-height:1.4}
 
+/* BILKØ */
+#bil{width:100%}
+#bil .bane{position:relative;width:100%;max-width:min(320px,calc(100% - 22px));aspect-ratio:1;
+  margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 3px 10px rgba(0,0,0,.08);
+  display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);
+  touch-action:manipulation}
+#bil .rute{border:1.5px solid #F1E7D6}
+#bil .bil{position:absolute;border-radius:12px;cursor:pointer;z-index:2;
+  border:3px solid rgba(0,0,0,.14);box-shadow:0 3px 6px rgba(0,0,0,.14);
+  background:#4A9DFF;transition:left .16s ease,top .16s ease}
+#bil .bil.rod{background:#FF5252!important}
+#bil .bil:nth-of-type(3n){background:#42C767}
+#bil .bil:nth-of-type(4n){background:#FFD400}
+#bil .bil:nth-of-type(5n){background:#B45CFF}
+#bil .bil.valgt{border-color:#3A2E22;box-shadow:0 0 0 4px rgba(58,46,34,.25),0 3px 8px rgba(0,0,0,.2)}
+#bil .tref{position:absolute;z-index:1;background:transparent;cursor:pointer}
+#bil .utgang{position:absolute;right:-16px;width:16px;z-index:4;cursor:pointer;
+  border-radius:0 9px 9px 0;background:#A8DFB5}
+#bil .utgang:active{background:#5FBF77}
+
 /* BYTTEKNAPP MELLOM APPENE */
 .bytt{display:flex;align-items:center;justify-content:center;gap:10px;margin:20px auto 0;
   padding:14px 22px;width:fit-content;max-width:100%;text-decoration:none;
@@ -191,7 +212,7 @@ body{
 
 <script>
 'use strict';
-var VERSJON='2.3';
+var VERSJON='2.5';
 var app=document.getElementById('app');
 var tittelEl=document.getElementById('tittel');
 var tilbakeEl=document.getElementById('tilbake');
@@ -275,7 +296,8 @@ var SPILL=[
   {id:'sud', navn:'Sudoku',    ikon:'🔢', kl:'t3'},
   {id:'baer',navn:'Bærplukk',  ikon:'🍓', kl:'t4'},
   {id:'tre', navn:'Tre på rad',ikon:'❌', kl:'t5'},
-  {id:'bob', navn:'Bobler',    ikon:'🔵', kl:'t6'}
+  {id:'bob', navn:'Bobler',    ikon:'🔵', kl:'t6'},
+  {id:'bil', navn:'Bilkø',     ikon:'🚗', kl:'t7'}
 ];
 function meny(){
   tilbakeEl.style.visibility='hidden';
@@ -298,7 +320,7 @@ function meny(){
   bytt.appendChild(E('div',null,'Spillebordet – for voksne'));
   tap(bytt,function(){SND.trykk();});
   w.appendChild(bytt);
-  w.appendChild(E('div','menuhint','Seks spill uten reklame.\nVersjon '+VERSJON));
+  w.appendChild(E('div','menuhint','Sju spill uten reklame.\nVersjon '+VERSJON));
   app.appendChild(w);
 }
 function aapne(g){
@@ -314,6 +336,7 @@ function aapne(g){
   else if(g.id==='baer')baer(w);
   else if(g.id==='tre')trePaaRad(w);
   else if(g.id==='bob')bobler(w);
+  else if(g.id==='bil')bilkoe(w);
   app.scrollTop=0;
 }
 tap(tilbakeEl,function(){SND.trykk();meny();});
@@ -1158,6 +1181,150 @@ function bobler(w){
   });
 
   visNivaaListe();
+}
+
+function bilkoe(w){
+  var BANER=['222v.242v.112v.432l.402l.022l|2','122v.202l.132l.232l.312v.302v|2','222v.103v.032v.042v.232v.312v|2','122v.112v.312v.332l.432l.032l|2','222v.102v.032l.332v.122l.003l|2','222v.302v.013v.332l.002v.023l|2','222v.003l.242v.302v.042v.202l|2','222v.243v.103v.422l.133v.312v.023l|4','122v.432l.112v.312v.322l.032l.242v|4','122v.202v.142v.002v.112v.332v.312l|4','022v.422l.012v.222l.332l.202l.302l|4','122v.233v.312l.003v.112v.302v.022l|5','022v.142v.322l.312v.212l.032l.202v|5','122v.422l.243v.023l.402l.003v.322l|5','122v.342v.113v.003l.232l.422l.322l.102v|6','022v.312l.222l.342v.142v.412l.012v.102v|6','122v.212v.342v.142v.402l.002l.032l.422l|6','022v.322l.012v.422l.142v.003v.212l.032l|6','122v.112v.232l.332v.302v.412l.312l.002v|8','222v.432l.302v.412l.112l.022l.132v.202l|9'];
+  var N=5, UT=2;
+  var LV=[{t:'Lett',fra:0,til:7},{t:'Middels',fra:7,til:14},{t:'Vanskelig',fra:14,til:20}];
+  var lvl=Lag.les('lvl-bil',0);
+  var lost=Lag.les('bil-lost',{});
+  var idx=0, biler=[], fasit=0, antTrekk=0, valgt=-1, ferdig=false;
+
+  var segL=E('div','seg');
+  w.appendChild(segL);
+  w.appendChild(hjelp('\uD83D\uDE97','Den røde bilen skal ut åpningen til høyre. Trykk på en bil, og trykk så der du vil at den skal stå. Bilene kjører bare rett fram — ingen kan svinge. Flytt de andre av veien først.'));
+  var st=E('div','stat'); w.appendChild(st);
+  var holder=E('div'); holder.id='bil'; w.appendChild(holder);
+  var kr=E('div','knapprad');
+  kr.appendChild(mkKn('Start på nytt',function(){SND.trykk();start(idx);}));
+  kr.appendChild(mkKn('Neste bane',neste,true));
+  w.appendChild(kr);
+
+  function lagre(){ Lag.skriv('bil-lost',lost); }
+  function tolk(s){
+    var d=s.split('|');
+    return {biler:d[0].split('.').map(function(c){
+      return {x:+c[0],y:+c[1],len:+c[2],vann:c[3]==='v'};}), fasit:+d[1]};
+  }
+  function rutenett(bl){
+    var g=new Array(N*N).fill(-1);
+    for(var i=0;i<bl.length;i++){var b=bl[i];
+      for(var k=0;k<b.len;k++)g[(b.y+(b.vann?0:k))*N+(b.x+(b.vann?k:0))]=i;}
+    return g;
+  }
+  function segs(){
+    tom(segL);
+    LV.forEach(function(l,i){
+      var b=E('button',i===lvl?'on':'',l.t);
+      tap(b,function(){SND.trykk();lvl=i;Lag.skriv('lvl-bil',lvl);segs();start(LV[i].fra);});
+      segL.appendChild(b);
+    });
+  }
+  function start(i){
+    idx=i;
+    var d=tolk(BANER[idx]);
+    biler=d.biler; fasit=d.fasit;
+    antTrekk=0; valgt=-1; ferdig=false;
+    tegn();
+  }
+  function neste(){
+    SND.trykk();
+    var L=LV[lvl], n=idx+1;
+    if(n>=L.til)n=L.fra;
+    start(n);
+  }
+  function tegn(){
+    tom(holder);
+    var bane=E('div','bane');
+    bane.style.setProperty('--n',N);
+    for(var r=0;r<N;r++)for(var c=0;c<N;c++){
+      var celle=E('div','rute');
+      celle.style.gridColumn=(c+1); celle.style.gridRow=(r+1);
+      bane.appendChild(celle);
+    }
+    var g=rutenett(biler);
+    biler.forEach(function(b,i){
+      var e=E('div','bil'+(i===0?' rod':'')+(b.vann?' v':' l')+(valgt===i?' valgt':''));
+      e.style.left=(b.x/N*100)+'%';
+      e.style.top=(b.y/N*100)+'%';
+      e.style.width=((b.vann?b.len:1)/N*100)+'%';
+      e.style.height=((b.vann?1:b.len)/N*100)+'%';
+      e.setAttribute('aria-label',(i===0?'Rød bil':'Bil')+', '+(b.vann?'vannrett':'loddrett'));
+      tap(e,function(ev){ ev.stopPropagation(); velg(i); });
+      bane.appendChild(e);
+    });
+    for(var r=0;r<N;r++)for(var c=0;c<N;c++)(function(r,c){
+      var t=E('div','tref');
+      t.style.left=(c/N*100)+'%'; t.style.top=(r/N*100)+'%';
+      t.style.width=(100/N)+'%'; t.style.height=(100/N)+'%';
+      tap(t,function(){ tilCelle(c,r); });
+      bane.appendChild(t);
+    })(r,c);
+    var ut=E('div','utgang');
+    ut.style.top=(UT/N*100)+'%'; ut.style.height=(100/N)+'%';
+    tap(ut,function(){ kjorUt(); });
+    ut.setAttribute('aria-label','Utgang');
+    bane.appendChild(ut);
+    holder.appendChild(bane);
+    tekst();
+  }
+  function tekst(){
+    if(ferdig)return;
+    var nr=idx-LV[lvl].fra+1, av=LV[lvl].til-LV[lvl].fra;
+    var merke=lost[idx]?' \u2713':'';
+    st.innerHTML='Bane <b>'+nr+'</b> av '+av+merke+' \u00b7 dine trekk: <b>'+antTrekk+
+      '</b> \u00b7 korteste: '+fasit;
+  }
+  function velg(i){
+    if(ferdig)return;
+    valgt=(valgt===i?-1:i); SND.trykk(); tegn();
+  }
+  function ledig(g,x,y,ikke){
+    if(x<0||x>=N||y<0||y>=N)return false;
+    var v=g[y*N+x];
+    return v===-1||v===ikke;
+  }
+  function tilCelle(cx,cy){
+    if(ferdig)return;
+    if(valgt<0){ SND.nei(); toast('Trykk først på en bil'); return; }
+    var b=biler[valgt], g=rutenett(biler);
+    if(b.vann){
+      if(cy!==b.y){ SND.nei(); toast('Den bilen kjører bare bortover'); return; }
+      var ny;
+      if(cx<b.x)ny=cx; else if(cx>b.x+b.len-1)ny=cx-b.len+1; else { valgt=-1; tegn(); return; }
+      if(ny<0||ny+b.len>N){ SND.nei(); return; }
+      for(var x=Math.min(ny,b.x);x<=Math.max(ny+b.len-1,b.x+b.len-1);x++)
+        if(!ledig(g,x,b.y,valgt)){ SND.nei(); toast('Det står en bil i veien'); return; }
+      b.x=ny;
+    } else {
+      if(cx!==b.x){ SND.nei(); toast('Den bilen kjører bare oppover og nedover'); return; }
+      var ny2;
+      if(cy<b.y)ny2=cy; else if(cy>b.y+b.len-1)ny2=cy-b.len+1; else { valgt=-1; tegn(); return; }
+      if(ny2<0||ny2+b.len>N){ SND.nei(); return; }
+      for(var y=Math.min(ny2,b.y);y<=Math.max(ny2+b.len-1,b.y+b.len-1);y++)
+        if(!ledig(g,b.x,y,valgt)){ SND.nei(); toast('Det står en bil i veien'); return; }
+      b.y=ny2;
+    }
+    antTrekk++; valgt=-1; SND.ok(); tegn();
+    if(biler[0].x+biler[0].len===N)toast('Nå er veien klar \u2014 trykk på \u00e5pningen');
+  }
+  function kjorUt(){
+    if(ferdig)return;
+    var b=biler[0];
+    if(b.x+b.len!==N){ SND.nei(); toast('Den røde bilen må helt bort til åpningen først'); return; }
+    antTrekk++; ferdig=true;
+    if(!lost[idx]||lost[idx]>antTrekk){ lost[idx]=antTrekk; lagre(); }
+    b.x=N;
+    tegn();
+    var perfekt=(antTrekk<=fasit);
+    st.innerHTML='Ute! <b>'+antTrekk+'</b> trekk'+(perfekt?' \u2014 korteste vei':'');
+    SND.jubel();
+    toast(perfekt?'Perfekt! '+antTrekk+' trekk':'Ute på '+antTrekk+' trekk',true);
+    setTimeout(neste,1600);
+  }
+  segs();
+  start(LV[lvl].fra);
 }
 
 /* ---------- FELLES KNAPP ---------- */

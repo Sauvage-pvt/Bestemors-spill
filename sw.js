@@ -11,7 +11,7 @@
  * CACHE-navnet trenger du normalt ikke å røre. Øk det bare hvis du
  * bytter ut ikonene og vil tvinge fram nye med én gang.
  */
-var CACHE = 'spillebordet-v5';
+var CACHE = 'spillebordet-v8';
 var SHELL = [
   './',
   './index.html',
